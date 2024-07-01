@@ -88,6 +88,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly project(":common")
     //annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+    annotationProcessor 'net.fabricmc:sponge-mixin:0.13.4+mixin.0.8.5'
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}")){
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
