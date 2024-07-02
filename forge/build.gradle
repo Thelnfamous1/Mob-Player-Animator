@@ -12,6 +12,9 @@ mixin {
 
     config("${mod_id}.mixins.json")
     config("${mod_id}.forge.mixins.json")
+
+    // Enables exporting mixin-changed classes to .mixin.out in the run folder
+    debug.export = true
 }
 
 minecraft {
@@ -94,6 +97,7 @@ dependencies {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim_version}")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
 
     runtimeOnly fg.deobf("lib:bettermobcombat-forge:${project.better_mob_combat_version}")
 
@@ -103,6 +107,8 @@ dependencies {
 
     // Mod Compatibility
     implementation fg.deobf("maven.modrinth:guard-villagers:${project.guard_villagers_version}")
+    implementation fg.deobf("maven.modrinth:entity-model-features:${project.emf_version}")
+    implementation fg.deobf("maven.modrinth:entitytexturefeatures:${project.etf_version}-forge")
 }
 
 tasks.withType(JavaCompile).configureEach {

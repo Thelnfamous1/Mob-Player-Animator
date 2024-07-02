@@ -5,7 +5,7 @@ import dev.kosmx.playerAnim.core.util.SetableSupplier;
 import dev.kosmx.playerAnim.impl.IMutableModel;
 import dev.kosmx.playerAnim.impl.IPlayerModel;
 import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
-import me.Thelnfamous1.mobplayeranimator.api.MobModelHelper;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Function;
 
-@Mixin(value = HumanoidModel.class, priority = 2000)//Apply after NotEnoughAnimation's inject
+@Mixin(value = HumanoidModel.class, priority = 2000) //apply after most modded injections
 public abstract class HumanoidModelMixin<T extends LivingEntity>
         extends AgeableListModel<T> implements IPlayerModel {
 
@@ -46,11 +46,19 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
         }
     }
 
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "HEAD"))
+    private void setDefaultBeforeRender(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
+        if(!PlayerModel.class.isInstance(this)){
+            //to not make everything wrong
+            PlayerAnimatorHelper.setDefaultPivot(this.head, this.body, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+        }
+    }
+
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
     private void setEmote(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
-            if(!bettermobcombat$firstPersonNext && MobModelHelper.isAnimating(mob)){
-                AnimationApplier emote = MobModelHelper.getAnimation(mob);
+            if(!bettermobcombat$firstPersonNext && PlayerAnimatorHelper.isAnimating(mob)){
+                AnimationApplier emote = PlayerAnimatorHelper.getAnimation(mob);
                 bettermobcombat$emoteSupplier.set(emote);
 
                 emote.updatePart("head", this.head);
@@ -67,11 +75,11 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
             else {
                 bettermobcombat$firstPersonNext = false;
                 bettermobcombat$emoteSupplier.set(null);
-                MobModelHelper.resetBend(this.body);
-                MobModelHelper.resetBend(this.leftArm);
-                MobModelHelper.resetBend(this.rightArm);
-                MobModelHelper.resetBend(this.leftLeg);
-                MobModelHelper.resetBend(this.rightLeg);
+                PlayerAnimatorHelper.resetBend(this.body);
+                PlayerAnimatorHelper.resetBend(this.leftArm);
+                PlayerAnimatorHelper.resetBend(this.rightArm);
+                PlayerAnimatorHelper.resetBend(this.leftLeg);
+                PlayerAnimatorHelper.resetBend(this.rightLeg);
             }
         }
     }

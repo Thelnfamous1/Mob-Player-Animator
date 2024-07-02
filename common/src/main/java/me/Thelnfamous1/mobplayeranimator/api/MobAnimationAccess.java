@@ -20,7 +20,7 @@ public final class MobAnimationAccess {
      * @param mob The Mob object
      * @return The mob's animation stack
      */
-    public static AnimationStack getPlayerAnimLayer(Mob mob) throws IllegalArgumentException {
+    public static AnimationStack getMobAnimLayer(Mob mob) throws IllegalArgumentException {
         if (mob instanceof IPlayer) {
             return ((IPlayer) mob).getAnimationStack();
         } else throw new IllegalArgumentException(mob + " is not a mob or library mixins failed");
@@ -34,7 +34,7 @@ public final class MobAnimationAccess {
      * @throws IllegalArgumentException if the given argument is not a mob, or api mixins have failed (normally never)
      * @implNote data is stored in the mob object (using mixins), using it is more efficient than any objectMap as objectMap solution does not know when to delete the data.
      */
-    public static MobAssociatedAnimationData getPlayerAssociatedData(@NotNull Mob mob) {
+    public static MobAssociatedAnimationData getMobAssociatedData(@NotNull Mob mob) {
         if (mob instanceof IAnimatedPlayer animatedPlayer) {
             return new MobAssociatedAnimationData(animatedPlayer);
         } else throw new IllegalArgumentException(mob + " is not a mob or library mixins failed");

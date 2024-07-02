@@ -25,6 +25,7 @@ dependencies {
     compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     implementation("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim_version}")
+    implementation("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
 
     // Better Mob Combat Dependencies
     implementation("maven.modrinth:better-combat:${project.better_combat_version}-forge")
@@ -32,6 +33,10 @@ dependencies {
     runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // Mod Compatibility
+    implementation("maven.modrinth:entity-model-features:${project.emf_version}")
+    implementation("maven.modrinth:entitytexturefeatures:${project.etf_version}-forge")
 }
 tasks.withType(Javadoc).configureEach {
     configure(options) {

@@ -31,6 +31,12 @@ versionRange="${player_anim_version_range}"
 ordering="AFTER"
 side="BOTH"
 [[dependencies.${mod_id}]]
+modId="cloth_config"
+mandatory=true
+versionRange="${cloth_config_version_range}"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.${mod_id}]]
 modId = "guardvillagers"
 mandatory = false
 versionRange = "${guard_villagers_version_range}"

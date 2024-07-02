@@ -74,6 +74,7 @@ subprojects {
                 "description": project.description,
                 "credits": credits,
                 "player_anim_version_range": player_anim_version_range,
+                "cloth_config_version_range": cloth_config_version_range,
                 "guard_villagers_version_range": guard_villagers_version_range
         ]
 

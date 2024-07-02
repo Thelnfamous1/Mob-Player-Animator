@@ -12,7 +12,7 @@ import dev.kosmx.playerAnim.impl.IPlayerModel;
 import dev.kosmx.playerAnim.impl.IUpperPartHelper;
 import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import dev.kosmx.playerAnim.impl.animation.IBendHelper;
-import me.Thelnfamous1.mobplayeranimator.api.MobModelHelper;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Function;
 
-@Mixin(value = IllagerModel.class, priority = 2000)
+@Mixin(value = IllagerModel.class, priority = 2000) //apply after most modded injections
 public abstract class IllagerModelMixin<T extends AbstractIllager> extends HierarchicalModelMixin<T> implements IPlayerModel, IMutableModel {
     @Shadow @Final private ModelPart head;
     @Shadow @Final private ModelPart hat;
@@ -134,6 +134,12 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
         this.bettermobcombat$body = root.getChild("body");
     }
 
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At(value = "HEAD"))
+    private void setDefaultBeforeRender(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
+        //to not make everything wrong
+        PlayerAnimatorHelper.setDefaultPivot(this.head, this.bettermobcombat$body, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+    }
+
     @WrapWithCondition(method = "setupAnim",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;animateZombieArms(Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/client/model/geom/ModelPart;ZFF)V")
     )
@@ -144,20 +150,20 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
                                                    float $$3,
                                                    float $$4,
                                                    float $$5) {
-        return !MobModelHelper.isAnimating(illager);
+        return !PlayerAnimatorHelper.isAnimating(illager);
     }
 
     @WrapWithCondition(method = "setupAnim",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;swingWeaponDown(Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/world/entity/Mob;FF)V")
     )
     private boolean onlyAnimateWeaponSwingIfAllowed(ModelPart rightArm, ModelPart leftArm, Mob mob, float attackTime, float bob) {
-        return !MobModelHelper.isAnimating(mob);
+        return !PlayerAnimatorHelper.isAnimating(mob);
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("TAIL"))
     private void setEmote(T illager, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
-        if(!bettermobcombat$firstPersonNext && MobModelHelper.isAnimating(illager)){
-            AnimationApplier emote = MobModelHelper.getAnimation(illager);
+        if(!bettermobcombat$firstPersonNext && PlayerAnimatorHelper.isAnimating(illager)){
+            AnimationApplier emote = PlayerAnimatorHelper.getAnimation(illager);
             bettermobcombat$emoteSupplier.set(emote);
 
             emote.updatePart("head", this.head);
@@ -174,11 +180,11 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
         else {
             bettermobcombat$firstPersonNext = false;
             bettermobcombat$emoteSupplier.set(null);
-            MobModelHelper.resetBend(this.bettermobcombat$body);
-            MobModelHelper.resetBend(this.leftArm);
-            MobModelHelper.resetBend(this.rightArm);
-            MobModelHelper.resetBend(this.leftLeg);
-            MobModelHelper.resetBend(this.rightLeg);
+            PlayerAnimatorHelper.resetBend(this.bettermobcombat$body);
+            PlayerAnimatorHelper.resetBend(this.leftArm);
+            PlayerAnimatorHelper.resetBend(this.rightArm);
+            PlayerAnimatorHelper.resetBend(this.leftLeg);
+            PlayerAnimatorHelper.resetBend(this.rightLeg);
         }
     }
 

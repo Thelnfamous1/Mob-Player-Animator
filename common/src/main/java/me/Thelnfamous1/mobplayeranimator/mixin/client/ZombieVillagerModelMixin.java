@@ -1,7 +1,7 @@
 package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
-import me.Thelnfamous1.mobplayeranimator.api.MobModelHelper;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.ZombieVillagerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -26,6 +26,6 @@ public abstract class ZombieVillagerModelMixin<T extends Zombie> extends Humanoi
                                                    float $$3,
                                                    float $$4,
                                                    float $$5) {
-        return !MobModelHelper.isAnimating(zombie);
+        return !PlayerAnimatorHelper.isAnimating(zombie);
     }
 }

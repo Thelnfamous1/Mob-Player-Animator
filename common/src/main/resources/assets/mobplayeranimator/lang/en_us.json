@@ -1,0 +1,7 @@
+{
+  "entity_model_features.config.variable_explanation.mobplayeranimator.is_playeranimator_animation_active": "If the entity has a Player Animator animation active",
+
+  "text.autoconfig.mobplayeranimator.title" : "Mob Player Animator",
+  "text.autoconfig.mobplayeranimator.option.client.is_emf_animation_halt_enabled" : "EMF Animation Halt",
+  "text.autoconfig.mobplayeranimator.option.client.is_emf_animation_halt_enabled.@Tooltip" : "Stop Entity Model Features animations from playing when a Player Animator animation is active"
+}

@@ -5,7 +5,7 @@ import com.mojang.math.Axis;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.core.util.Vec3f;
 import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
-import me.Thelnfamous1.mobplayeranimator.api.MobModelHelper;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -35,7 +35,7 @@ public abstract class MobRendererMixin<T extends Mob, M extends EntityModel<T>> 
 
     @Override
     protected void bettermobcombat$applyBodyRotations(Mob mob, PoseStack matrixStack, float tickDelta) {
-        AnimationApplier animationPlayer = MobModelHelper.getAnimation(mob);
+        AnimationApplier animationPlayer = PlayerAnimatorHelper.getAnimation(mob);
         animationPlayer.setTickDelta(tickDelta);
         if(animationPlayer.isActive()){
             //These are additive properties

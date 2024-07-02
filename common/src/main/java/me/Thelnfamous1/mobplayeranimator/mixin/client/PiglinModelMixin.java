@@ -2,7 +2,7 @@ package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
-import me.Thelnfamous1.mobplayeranimator.api.MobModelHelper;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -19,14 +19,14 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/PiglinModel;holdWeaponHigh(Lnet/minecraft/world/entity/Mob;)V")
     )
     private boolean onlyAnimateWeaponHighIfAllowed(PiglinModel<T> model, T piglin) {
-        return !MobModelHelper.isAnimating(piglin);
+        return !PlayerAnimatorHelper.isAnimating(piglin);
     }
 
     @WrapWithCondition(method = "setupAttackAnimation",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;swingWeaponDown(Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/world/entity/Mob;FF)V")
     )
     private boolean onlyAnimateWeaponSwingIfAllowed(ModelPart rightArm, ModelPart leftArm, Mob mob, float attackTime, float bob) {
-        return !MobModelHelper.isAnimating(mob);
+        return !PlayerAnimatorHelper.isAnimating(mob);
     }
 
     @WrapWithCondition(method = "setupAnim",
@@ -39,7 +39,7 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
                                                    float $$3,
                                                    float $$4,
                                                    float $$5) {
-        return !MobModelHelper.isAnimating(piglin);
+        return !PlayerAnimatorHelper.isAnimating(piglin);
     }
 
     @WrapWithCondition(method = "setupAnim", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/ModelPart;loadPose(Lnet/minecraft/client/model/geom/PartPose;)V"))
@@ -50,13 +50,13 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
                                        float $$3,
                                        float $$4,
                                        float $$5){
-        return !MobModelHelper.isAnimating(piglin);
+        return !PlayerAnimatorHelper.isAnimating(piglin);
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/Mob;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER))
     private void setEmote(T piglin, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
-        if(!bettermobcombat$firstPersonNext && MobModelHelper.isAnimating(piglin)){
-            AnimationApplier emote = MobModelHelper.getAnimation(piglin);
+        if(!bettermobcombat$firstPersonNext && PlayerAnimatorHelper.isAnimating(piglin)){
+            AnimationApplier emote = PlayerAnimatorHelper.getAnimation(piglin);
             bettermobcombat$emoteSupplier.set(emote);
 
             emote.updatePart("head", this.head);
@@ -73,11 +73,11 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
         else {
             bettermobcombat$firstPersonNext = false;
             bettermobcombat$emoteSupplier.set(null);
-            MobModelHelper.resetBend(this.body);
-            MobModelHelper.resetBend(this.leftArm);
-            MobModelHelper.resetBend(this.rightArm);
-            MobModelHelper.resetBend(this.leftLeg);
-            MobModelHelper.resetBend(this.rightLeg);
+            PlayerAnimatorHelper.resetBend(this.body);
+            PlayerAnimatorHelper.resetBend(this.leftArm);
+            PlayerAnimatorHelper.resetBend(this.rightArm);
+            PlayerAnimatorHelper.resetBend(this.leftLeg);
+            PlayerAnimatorHelper.resetBend(this.rightLeg);
         }
     }
 }

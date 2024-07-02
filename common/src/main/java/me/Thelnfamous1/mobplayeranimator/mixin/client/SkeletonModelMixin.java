@@ -1,6 +1,6 @@
 package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
-import me.Thelnfamous1.mobplayeranimator.api.MobModelHelper;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.SkeletonModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -20,7 +20,7 @@ public abstract class SkeletonModelMixin<T extends Mob & RangedAttackMob> extend
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/Mob;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/HumanoidModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER), cancellable = true)
     private void onlyAnimateSkeletonArmsIfAllowed(T skeleton, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
-        if(MobModelHelper.isAnimating(skeleton)){
+        if(PlayerAnimatorHelper.isAnimating(skeleton)){
             ci.cancel();
         }
     }
