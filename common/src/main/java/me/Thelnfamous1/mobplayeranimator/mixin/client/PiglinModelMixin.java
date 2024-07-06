@@ -1,7 +1,6 @@
 package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
-import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -54,30 +53,7 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/Mob;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER))
-    private void setEmote(T piglin, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
-        if(!mobplayeranimator$firstPersonNext && PlayerAnimatorHelper.isAnimating(piglin)){
-            AnimationApplier emote = PlayerAnimatorHelper.getAnimation(piglin);
-            mobplayeranimator$emoteSupplier.set(emote);
-
-            emote.updatePart("head", this.head);
-            this.hat.copyFrom(this.head);
-
-            emote.updatePart("leftArm", this.leftArm);
-            emote.updatePart("rightArm", this.rightArm);
-            emote.updatePart("leftLeg", this.leftLeg);
-            emote.updatePart("rightLeg", this.rightLeg);
-            emote.updatePart("torso", this.body);
-
-
-        }
-        else {
-            mobplayeranimator$firstPersonNext = false;
-            mobplayeranimator$emoteSupplier.set(null);
-            PlayerAnimatorHelper.resetBend(this.body);
-            PlayerAnimatorHelper.resetBend(this.leftArm);
-            PlayerAnimatorHelper.resetBend(this.rightArm);
-            PlayerAnimatorHelper.resetBend(this.leftLeg);
-            PlayerAnimatorHelper.resetBend(this.rightLeg);
-        }
+    private void post_playerModelSetupAnim(T piglin, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
+        PlayerAnimatorHelper.setEmote(this, PlayerAnimatorHelper.getAnimation(piglin));
     }
 }

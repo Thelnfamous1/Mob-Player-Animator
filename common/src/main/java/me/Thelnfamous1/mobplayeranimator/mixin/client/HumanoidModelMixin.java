@@ -4,9 +4,12 @@ import dev.kosmx.playerAnim.core.impl.AnimationProcessor;
 import dev.kosmx.playerAnim.core.util.SetableSupplier;
 import dev.kosmx.playerAnim.impl.IMutableModel;
 import dev.kosmx.playerAnim.impl.IPlayerModel;
-import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
+import me.Thelnfamous1.mobplayeranimator.api.FirstPersonTracker;
+import me.Thelnfamous1.mobplayeranimator.api.HumanoidModelAccess;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.AgeableListModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
@@ -21,7 +24,7 @@ import java.util.function.Function;
 
 @Mixin(value = HumanoidModel.class, priority = 2000) //apply after most modded injections
 public abstract class HumanoidModelMixin<T extends LivingEntity>
-        extends AgeableListModel<T> implements IPlayerModel {
+        extends AgeableListModel<T> implements IPlayerModel, IMutableModel, HumanoidModelAccess, FirstPersonTracker {
 
 
     @Shadow @Final public ModelPart leftLeg;
@@ -31,61 +34,83 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
     @Shadow @Final public ModelPart leftArm;
     @Shadow @Final public ModelPart body;
     @Shadow @Final public ModelPart hat;
+
+    @Shadow public abstract ModelPart getHead();
+
     @Unique
     protected final SetableSupplier<AnimationProcessor> mobplayeranimator$emoteSupplier = new SetableSupplier<>();
     @Unique
     protected boolean mobplayeranimator$firstPersonNext = false;
 
     @Inject(method = "<init>(Lnet/minecraft/client/model/geom/ModelPart;Ljava/util/function/Function;)V", at = @At("RETURN"))
-    private void initBendableStuff(ModelPart $$0, Function $$1, CallbackInfo ci){
+    private void post_init(ModelPart $$0, Function $$1, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
-            IMutableModel thisWithMixin = (IMutableModel) this;
-            mobplayeranimator$emoteSupplier.set(null);
-
-            thisWithMixin.setEmoteSupplier(mobplayeranimator$emoteSupplier);
+            PlayerAnimatorHelper.initEmoteSupplier(this, this.mobplayeranimator$emoteSupplier);
         }
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "HEAD"))
-    private void setDefaultBeforeRender(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
+    private void pre_setupAnim(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
             //to not make everything wrong
-            PlayerAnimatorHelper.setDefaultPivot(this.head, this.body, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+            PlayerAnimatorHelper.setDefaultPivot(this);
         }
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
-    private void setEmote(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
+    private void post_setupAnim(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
-            if(!mobplayeranimator$firstPersonNext && PlayerAnimatorHelper.isAnimating(mob)){
-                AnimationApplier emote = PlayerAnimatorHelper.getAnimation(mob);
-                mobplayeranimator$emoteSupplier.set(emote);
-
-                emote.updatePart("head", this.head);
-                this.hat.copyFrom(this.head);
-
-                emote.updatePart("leftArm", this.leftArm);
-                emote.updatePart("rightArm", this.rightArm);
-                emote.updatePart("leftLeg", this.leftLeg);
-                emote.updatePart("rightLeg", this.rightLeg);
-                emote.updatePart("torso", this.body);
-
-
-            }
-            else {
-                mobplayeranimator$firstPersonNext = false;
-                mobplayeranimator$emoteSupplier.set(null);
-                PlayerAnimatorHelper.resetBend(this.body);
-                PlayerAnimatorHelper.resetBend(this.leftArm);
-                PlayerAnimatorHelper.resetBend(this.rightArm);
-                PlayerAnimatorHelper.resetBend(this.leftLeg);
-                PlayerAnimatorHelper.resetBend(this.rightLeg);
-            }
+            PlayerAnimatorHelper.setEmote(this, PlayerAnimatorHelper.getAnimation(mob));
         }
     }
 
     @Override
     public void playerAnimator_prepForFirstPersonRender() {
-        mobplayeranimator$firstPersonNext = true;
+        this.mobplayeranimator$setFirstPersonNext(true);
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getHead() {
+        return this.getHead();
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getHat() {
+        return this.hat;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getBody() {
+        return this.body;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getLeftArm() {
+        return this.leftArm;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getRightArm() {
+        return this.rightArm;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getLeftLeg() {
+        return this.leftLeg;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getRightLeg() {
+        return this.rightLeg;
+    }
+
+    @Override
+    public boolean mobplayeranimator$isFirstPersonNext() {
+        return this.mobplayeranimator$firstPersonNext;
+    }
+
+    @Override
+    public void mobplayeranimator$setFirstPersonNext(boolean firstPersonNext) {
+        this.mobplayeranimator$firstPersonNext = firstPersonNext;
     }
 }
