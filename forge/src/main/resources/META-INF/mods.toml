@@ -42,3 +42,9 @@ mandatory = false
 versionRange = "${guard_villagers_version_range}"
 ordering = "NONE"
 side = "BOTH"
+[[dependencies.${mod_id}]]
+modId = "entity_model_features"
+mandatory = false
+versionRange = "${emf_version_range}"
+ordering = "NONE"
+side = "CLIENT"

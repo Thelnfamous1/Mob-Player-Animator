@@ -12,6 +12,6 @@ public class MobPlayerAnimatorFabric implements ModInitializer {
         // project.
 
         // Use Fabric to bootstrap the Common mod.
-        MobPlayerAnimatorCommon.init();
+        MobPlayerAnimator.init();
     }
 }

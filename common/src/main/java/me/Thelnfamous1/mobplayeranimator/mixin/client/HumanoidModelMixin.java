@@ -32,17 +32,17 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
     @Shadow @Final public ModelPart body;
     @Shadow @Final public ModelPart hat;
     @Unique
-    protected final SetableSupplier<AnimationProcessor> bettermobcombat$emoteSupplier = new SetableSupplier<>();
+    protected final SetableSupplier<AnimationProcessor> mobplayeranimator$emoteSupplier = new SetableSupplier<>();
     @Unique
-    protected boolean bettermobcombat$firstPersonNext = false;
+    protected boolean mobplayeranimator$firstPersonNext = false;
 
     @Inject(method = "<init>(Lnet/minecraft/client/model/geom/ModelPart;Ljava/util/function/Function;)V", at = @At("RETURN"))
     private void initBendableStuff(ModelPart $$0, Function $$1, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
             IMutableModel thisWithMixin = (IMutableModel) this;
-            bettermobcombat$emoteSupplier.set(null);
+            mobplayeranimator$emoteSupplier.set(null);
 
-            thisWithMixin.setEmoteSupplier(bettermobcombat$emoteSupplier);
+            thisWithMixin.setEmoteSupplier(mobplayeranimator$emoteSupplier);
         }
     }
 
@@ -57,9 +57,9 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
     private void setEmote(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
-            if(!bettermobcombat$firstPersonNext && PlayerAnimatorHelper.isAnimating(mob)){
+            if(!mobplayeranimator$firstPersonNext && PlayerAnimatorHelper.isAnimating(mob)){
                 AnimationApplier emote = PlayerAnimatorHelper.getAnimation(mob);
-                bettermobcombat$emoteSupplier.set(emote);
+                mobplayeranimator$emoteSupplier.set(emote);
 
                 emote.updatePart("head", this.head);
                 this.hat.copyFrom(this.head);
@@ -73,8 +73,8 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
 
             }
             else {
-                bettermobcombat$firstPersonNext = false;
-                bettermobcombat$emoteSupplier.set(null);
+                mobplayeranimator$firstPersonNext = false;
+                mobplayeranimator$emoteSupplier.set(null);
                 PlayerAnimatorHelper.resetBend(this.body);
                 PlayerAnimatorHelper.resetBend(this.leftArm);
                 PlayerAnimatorHelper.resetBend(this.rightArm);
@@ -86,6 +86,6 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
 
     @Override
     public void playerAnimator_prepForFirstPersonRender() {
-        bettermobcombat$firstPersonNext = true;
+        mobplayeranimator$firstPersonNext = true;
     }
 }

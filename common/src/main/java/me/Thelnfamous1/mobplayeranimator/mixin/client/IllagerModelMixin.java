@@ -12,6 +12,7 @@ import dev.kosmx.playerAnim.impl.IPlayerModel;
 import dev.kosmx.playerAnim.impl.IUpperPartHelper;
 import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import dev.kosmx.playerAnim.impl.animation.IBendHelper;
+import me.Thelnfamous1.mobplayeranimator.api.IllagerModelAccess;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.IllagerModel;
@@ -32,21 +33,22 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Function;
 
 @Mixin(value = IllagerModel.class, priority = 2000) //apply after most modded injections
-public abstract class IllagerModelMixin<T extends AbstractIllager> extends HierarchicalModelMixin<T> implements IPlayerModel, IMutableModel {
+public abstract class IllagerModelMixin<T extends AbstractIllager> extends HierarchicalModelMixin<T> implements IPlayerModel, IMutableModel, IllagerModelAccess {
     @Shadow @Final private ModelPart head;
     @Shadow @Final private ModelPart hat;
     @Shadow @Final private ModelPart leftArm;
     @Shadow @Final private ModelPart rightArm;
     @Shadow @Final private ModelPart rightLeg;
     @Shadow @Final private ModelPart leftLeg;
+    @Shadow @Final private ModelPart arms;
     @Unique
-    private SetableSupplier<AnimationProcessor> bettermobcombat$animation = new SetableSupplier<>();
+    private SetableSupplier<AnimationProcessor> mobplayeranimator$animation = new SetableSupplier<>();
     @Unique
-    private final SetableSupplier<AnimationProcessor> bettermobcombat$emoteSupplier = new SetableSupplier<>();
+    private final SetableSupplier<AnimationProcessor> mobplayeranimator$emoteSupplier = new SetableSupplier<>();
     @Unique
-    private boolean bettermobcombat$firstPersonNext = false;
+    private boolean mobplayeranimator$firstPersonNext = false;
     @Unique
-    private ModelPart bettermobcombat$body;
+    private ModelPart mobplayeranimator$body;
 
     public IllagerModelMixin(Function<ResourceLocation, RenderType> $$0) {
         super($$0);
@@ -54,37 +56,37 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
 
     @Override
     public void setEmoteSupplier(SetableSupplier<AnimationProcessor> emoteSupplier) {
-        this.bettermobcombat$animation = emoteSupplier;
+        this.mobplayeranimator$animation = emoteSupplier;
     }
 
     @Override
     public SetableSupplier<AnimationProcessor> getEmoteSupplier(){
-        return this.bettermobcombat$animation;
+        return this.mobplayeranimator$animation;
     }
 
     @Override
-    protected boolean bettermobcombat$bendAnimation(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-        if(Helper.isBendEnabled() && this.bettermobcombat$animation.get() != null && this.bettermobcombat$animation.get().isActive()){
-            this.bettermobcombat$headParts().forEach((part)->{
+    protected boolean mobplayeranimator$bendAnimation(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        if(Helper.isBendEnabled() && this.mobplayeranimator$animation.get() != null && this.mobplayeranimator$animation.get().isActive()){
+            this.mobplayeranimator$headParts().forEach((part)->{
                 if(! ((IUpperPartHelper)(Object)part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
-            this.bettermobcombat$bodyParts().forEach((part)->{
+            this.mobplayeranimator$bodyParts().forEach((part)->{
                 if(! ((IUpperPartHelper)(Object)part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
 
-            SetableSupplier<AnimationProcessor> emoteSupplier = this.bettermobcombat$animation;
+            SetableSupplier<AnimationProcessor> emoteSupplier = this.mobplayeranimator$animation;
             matrices.pushPose();
             IBendHelper.rotateMatrixStack(matrices, emoteSupplier.get().getBend("body"));
-            this.bettermobcombat$headParts().forEach((part)->{
+            this.mobplayeranimator$headParts().forEach((part)->{
                 if(((IUpperPartHelper)(Object)part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
             });
-            this.bettermobcombat$bodyParts().forEach((part)->{
+            this.mobplayeranimator$bodyParts().forEach((part)->{
                 if(((IUpperPartHelper)(Object)part).isUpperPart()){
                     part.render(matrices, vertices, light, overlay, red, green, blue, alpha);
                 }
@@ -96,19 +98,19 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
     }
 
     @Unique
-    private Iterable<ModelPart> bettermobcombat$headParts() {
+    private Iterable<ModelPart> mobplayeranimator$headParts() {
         return ImmutableList.of(this.head);
     }
 
     @Unique
-    private Iterable<ModelPart> bettermobcombat$bodyParts() {
-        return ImmutableList.of(this.bettermobcombat$body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.hat);
+    private Iterable<ModelPart> mobplayeranimator$bodyParts() {
+        return ImmutableList.of(this.mobplayeranimator$body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.hat);
     }
 
     @Override
-    protected void bettermobcombat$copyMutatedAttributes(EntityModel<T> otherModel) {
-        if(this.bettermobcombat$animation != null) {
-            ((IMutableModel) otherModel).setEmoteSupplier(this.bettermobcombat$animation);
+    protected void mobplayeranimator$copyMutatedAttributes(EntityModel<T> otherModel) {
+        if(this.mobplayeranimator$animation != null) {
+            ((IMutableModel) otherModel).setEmoteSupplier(this.mobplayeranimator$animation);
         }
     }
 
@@ -126,18 +128,18 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
         ((IUpperPartHelper)(Object)hat).setUpperPart(true);
 
         // Copied from PlayerAnimator's PlayerModelMixin#initBendableStuff
-        bettermobcombat$emoteSupplier.set(null);
+        mobplayeranimator$emoteSupplier.set(null);
 
-        this.setEmoteSupplier(bettermobcombat$emoteSupplier);
+        this.setEmoteSupplier(mobplayeranimator$emoteSupplier);
 
         // IllagerModel does not store the "body" ModelPart as a field
-        this.bettermobcombat$body = root.getChild("body");
+        this.mobplayeranimator$body = root.getChild("body");
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At(value = "HEAD"))
     private void setDefaultBeforeRender(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
         //to not make everything wrong
-        PlayerAnimatorHelper.setDefaultPivot(this.head, this.bettermobcombat$body, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+        PlayerAnimatorHelper.setDefaultPivot(this.head, this.mobplayeranimator$body, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
     }
 
     @WrapWithCondition(method = "setupAnim",
@@ -162,9 +164,13 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("TAIL"))
     private void setEmote(T illager, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
-        if(!bettermobcombat$firstPersonNext && PlayerAnimatorHelper.isAnimating(illager)){
+        if(!mobplayeranimator$firstPersonNext && PlayerAnimatorHelper.isAnimating(illager)){
+            this.arms.visible = false;
+            this.leftArm.visible = true;
+            this.rightArm.visible = true;
+
             AnimationApplier emote = PlayerAnimatorHelper.getAnimation(illager);
-            bettermobcombat$emoteSupplier.set(emote);
+            mobplayeranimator$emoteSupplier.set(emote);
 
             emote.updatePart("head", this.head);
             this.hat.copyFrom(this.head);
@@ -173,14 +179,14 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
             emote.updatePart("rightArm", this.rightArm);
             emote.updatePart("leftLeg", this.leftLeg);
             emote.updatePart("rightLeg", this.rightLeg);
-            emote.updatePart("torso", this.bettermobcombat$body);
+            emote.updatePart("torso", this.mobplayeranimator$body);
 
 
         }
         else {
-            bettermobcombat$firstPersonNext = false;
-            bettermobcombat$emoteSupplier.set(null);
-            PlayerAnimatorHelper.resetBend(this.bettermobcombat$body);
+            mobplayeranimator$firstPersonNext = false;
+            mobplayeranimator$emoteSupplier.set(null);
+            PlayerAnimatorHelper.resetBend(this.mobplayeranimator$body);
             PlayerAnimatorHelper.resetBend(this.leftArm);
             PlayerAnimatorHelper.resetBend(this.rightArm);
             PlayerAnimatorHelper.resetBend(this.leftLeg);
@@ -190,6 +196,36 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
 
     @Override
     public void playerAnimator_prepForFirstPersonRender() {
-        bettermobcombat$firstPersonNext = true;
+        mobplayeranimator$firstPersonNext = true;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getBody() {
+        return this.mobplayeranimator$body;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getLeftArm() {
+        return this.leftArm;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getRightArm() {
+        return this.rightArm;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getLeftLeg() {
+        return this.leftLeg;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getRightLeg() {
+        return this.rightLeg;
+    }
+
+    @Override
+    public ModelPart mobplayeranimator$getArms() {
+        return this.arms;
     }
 }

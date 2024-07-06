@@ -10,6 +10,7 @@
   "client": [
     "client.AbstractZombieModelMixin",
     "client.EntityModelMixin",
+    "client.EntityRendererDispatcherMixin",
     "client.HierarchicalModelMixin",
     "client.HumanoidMobRendererMixin",
     "client.HumanoidModelMixin",
@@ -18,8 +19,7 @@
     "client.MobRendererMixin",
     "client.PiglinModelMixin",
     "client.SkeletonModelMixin",
-    "client.ZombieVillagerModelMixin",
-    "client.compat.EMFModelPartWithStateMixin"
+    "client.ZombieVillagerModelMixin"
   ],
   "server": [
   ],

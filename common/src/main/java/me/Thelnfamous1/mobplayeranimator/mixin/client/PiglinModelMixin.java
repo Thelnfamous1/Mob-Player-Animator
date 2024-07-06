@@ -55,9 +55,9 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/Mob;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/PlayerModel;setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", shift = At.Shift.AFTER))
     private void setEmote(T piglin, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
-        if(!bettermobcombat$firstPersonNext && PlayerAnimatorHelper.isAnimating(piglin)){
+        if(!mobplayeranimator$firstPersonNext && PlayerAnimatorHelper.isAnimating(piglin)){
             AnimationApplier emote = PlayerAnimatorHelper.getAnimation(piglin);
-            bettermobcombat$emoteSupplier.set(emote);
+            mobplayeranimator$emoteSupplier.set(emote);
 
             emote.updatePart("head", this.head);
             this.hat.copyFrom(this.head);
@@ -71,8 +71,8 @@ public abstract class PiglinModelMixin<T extends Mob> extends HumanoidModelMixin
 
         }
         else {
-            bettermobcombat$firstPersonNext = false;
-            bettermobcombat$emoteSupplier.set(null);
+            mobplayeranimator$firstPersonNext = false;
+            mobplayeranimator$emoteSupplier.set(null);
             PlayerAnimatorHelper.resetBend(this.body);
             PlayerAnimatorHelper.resetBend(this.leftArm);
             PlayerAnimatorHelper.resetBend(this.rightArm);

@@ -3,5 +3,9 @@
 
   "text.autoconfig.mobplayeranimator.title" : "Mob Player Animator",
   "text.autoconfig.mobplayeranimator.option.client.is_emf_animation_halt_enabled" : "EMF Animation Halt",
-  "text.autoconfig.mobplayeranimator.option.client.is_emf_animation_halt_enabled.@Tooltip" : "Stop Entity Model Features animations from playing when a Player Animator animation is active"
+  "text.autoconfig.mobplayeranimator.option.client.is_emf_animation_halt_enabled.@Tooltip" : "Stop Entity Model Features animations from playing when a Player Animator animation is active",
+  "text.autoconfig.mobplayeranimator.option.client.emf_animation_halt_blacklist" : "EMF Animation Halt Blacklist",
+  "text.autoconfig.mobplayeranimator.option.client.emf_animation_halt_blacklist.@Tooltip" : "For these mobs, blacklist them from having their EMF animations being halted when a Player Animator animation is active",
+  "text.autoconfig.mobplayeranimator.option.client.emf_force_vanilla_models" : "EMF Force Vanilla Models",
+  "text.autoconfig.mobplayeranimator.option.client.emf_force_vanilla_models.@Tooltip" : "For these mobs, force EMF to use their vanilla model instead of halting their animations when a Player Animator animation is active"
 }

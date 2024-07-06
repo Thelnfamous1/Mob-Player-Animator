@@ -16,9 +16,9 @@ public abstract class HumanoidMobRendererMixin<T extends Mob, M extends Humanoid
     // This causes problems, disabling for now
         /*
     @Override
-    protected void bettermobcombat$handleFirstPersonRender(T mob) {
+    protected void mobplayeranimator$handleFirstPersonRender(T mob) {
         if (FirstPersonMode.isFirstPersonPass()) {
-            var animationApplier = MobPlayerModel.bettermobcombat$getAnimation(mob);
+            var animationApplier = MobPlayerModel.mobplayeranimator$getAnimation(mob);
             var config = animationApplier.getFirstPersonConfiguration();
 
             if (mob == Minecraft.getInstance().getCameraEntity()) {

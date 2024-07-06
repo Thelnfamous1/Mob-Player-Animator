@@ -10,6 +10,10 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 public class MPAClientConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean is_emf_animation_halt_enabled = true;
+    @ConfigEntry.Gui.Tooltip
+    public String[] emf_animation_halt_blacklist = new String[]{};
+    @ConfigEntry.Gui.Tooltip
+    public String[] emf_force_vanilla_models = new String[]{"minecraft:vindicator"};
 
     public MPAClientConfig() {
     }

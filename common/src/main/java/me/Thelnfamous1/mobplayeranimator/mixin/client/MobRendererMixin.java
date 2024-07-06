@@ -26,15 +26,15 @@ public abstract class MobRendererMixin<T extends Mob, M extends EntityModel<T>> 
 
     @Inject(method = "render(Lnet/minecraft/world/entity/Mob;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"))
     private void pre_render(T mob, float $$1, float $$2, PoseStack $$3, MultiBufferSource $$4, int $$5, CallbackInfo ci){
-        this.bettermobcombat$handleFirstPersonRender(mob);
+        this.mobplayeranimator$handleFirstPersonRender(mob);
     }
 
     @Unique
-    protected void bettermobcombat$handleFirstPersonRender(T mob) {
+    protected void mobplayeranimator$handleFirstPersonRender(T mob) {
     }
 
     @Override
-    protected void bettermobcombat$applyBodyRotations(Mob mob, PoseStack matrixStack, float tickDelta) {
+    protected void mobplayeranimator$applyBodyRotations(Mob mob, PoseStack matrixStack, float tickDelta) {
         AnimationApplier animationPlayer = PlayerAnimatorHelper.getAnimation(mob);
         animationPlayer.setTickDelta(tickDelta);
         if(animationPlayer.isActive()){

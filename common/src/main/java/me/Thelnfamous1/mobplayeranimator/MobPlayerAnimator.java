@@ -7,7 +7,9 @@ import me.Thelnfamous1.mobplayeranimator.platform.Services;
 // import and access the vanilla codebase, libraries used by vanilla, and optionally third party libraries that provide
 // common compatible binaries. This means common code can not directly use loader specific concepts such as Forge events
 // however it will be compatible with all supported mod loaders.
-public class MobPlayerAnimatorCommon {
+public class MobPlayerAnimator {
+
+    private static boolean emfLoaded;
 
     // The loader specific projects are able to import and use any code from the common project. This allows you to
     // write the majority of your code here and load it from your loader specific projects. This example has some
@@ -19,7 +21,12 @@ public class MobPlayerAnimatorCommon {
         // we have an interface in the common code and use a loader specific implementation to delegate our call to
         // the platform specific approach.
         if(Services.PLATFORM.isModLoaded("entity_model_features")){
+            emfLoaded = true;
             EMFCompat.registerVariables();
         }
+    }
+
+    public static boolean isEMFLoaded() {
+        return emfLoaded;
     }
 }

@@ -21,10 +21,10 @@ public abstract class EntityModelMixin<T extends Entity> extends Model {
 
     @Inject(method = "copyPropertiesTo", at = @At("RETURN"))
     private void post_copy_PropertiesTo(EntityModel<T> otherModel, CallbackInfo ci){
-        this.bettermobcombat$copyMutatedAttributes(otherModel);
+        this.mobplayeranimator$copyMutatedAttributes(otherModel);
     }
 
     @Unique
-    protected void bettermobcombat$copyMutatedAttributes(EntityModel<T> otherModel) {
+    protected void mobplayeranimator$copyMutatedAttributes(EntityModel<T> otherModel) {
     }
 }

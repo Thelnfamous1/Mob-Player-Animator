@@ -16,7 +16,7 @@ public class MobPlayerAnimatorForge {
         // project.
     
         // Use Forge to bootstrap the Common mod.
-        MobPlayerAnimatorCommon.init();
+        MobPlayerAnimator.init();
 
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory(
