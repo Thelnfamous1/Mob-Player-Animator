@@ -20,17 +20,23 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.AbstractIllager;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class PlayerAnimatorHelper {
 
     /**
      * Convenience method to retrieve the animation of a player or mob
+     *
      * @param entity A player or mob
-     * @return The animation of the player or mob
+     * @return The animation of the player or mob, or null if neither
      */
+    @Nullable
     public static AnimationApplier getAnimation(LivingEntity entity){
-        return ((IAnimatedPlayer) entity).playerAnimator_getAnimation();
+        if(entity instanceof IAnimatedPlayer animatedPlayer){
+            return animatedPlayer.playerAnimator_getAnimation();
+        }
+        return null;
     }
 
     /**
@@ -39,7 +45,8 @@ public class PlayerAnimatorHelper {
      * @return Whether the player or mob is animating
      */
     public static boolean isAnimating(LivingEntity entity){
-        return getAnimation(entity).isActive();
+        AnimationApplier animation = getAnimation(entity);
+        return animation != null && animation.isActive();
     }
 
     /**
@@ -49,7 +56,9 @@ public class PlayerAnimatorHelper {
      * @param matrixStack The PoseStack of the model being rotated by the renderer
      * @param tickDelta The change in tick provided to the renderer
      */
-    public static void applyBodyRotations(AnimationApplier animation, PoseStack matrixStack, float tickDelta) {
+    public static void applyBodyRotations(@Nullable AnimationApplier animation, PoseStack matrixStack, float tickDelta) {
+        if(animation == null) return;
+
         animation.setTickDelta(tickDelta);
         if(animation.isActive()){
             //These are additive properties
@@ -176,7 +185,10 @@ public class PlayerAnimatorHelper {
      * @param model The humanoid model
      * @param emote The emote to apply to the model
      */
-    public static <T extends HumanoidModelAccess & IMutableModel & FirstPersonTracker> void setEmote(T model, AnimationApplier emote) {
+    public static <T extends HumanoidModelAccess & IMutableModel & FirstPersonTracker> void setEmote(T model, @Nullable AnimationApplier emote) {
+        if(emote == null){
+            return;
+        }
         // Copied from PlayerAnimator's PlayerModelMixin#setEmote
         if(!model.mobplayeranimator$isFirstPersonNext() && emote.isActive()) {
             model.getEmoteSupplier().set(emote);
