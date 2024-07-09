@@ -1,6 +1,5 @@
 package me.Thelnfamous1.mobplayeranimator.compat;
 
-import dev.kosmx.playerAnim.impl.IAnimatedPlayer;
 import me.Thelnfamous1.mobplayeranimator.Constants;
 import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimatorClient;
 import me.Thelnfamous1.mobplayeranimator.api.IllagerModelAccess;
@@ -31,8 +30,9 @@ public class EMFCompat {
     }
 
     public static boolean isPlayerAnimatorAnimationActive() {
-        if (EMFAnimationEntityContext.getEMFEntity() instanceof IAnimatedPlayer animatedPlayer) {
-            return animatedPlayer.playerAnimator_getAnimation().isActive();
+        if (EMFAnimationEntityContext.getEMFEntity() instanceof LivingEntity livingEntity) {
+            return PlayerAnimatorHelper.isAnimating(livingEntity)
+                    && MobPlayerAnimatorClient.getClientConfigHelper().isAnimatingAnyNonBlacklistedAnimation((livingEntity));
         } else {
             return false;
         }
@@ -43,20 +43,21 @@ public class EMFCompat {
     }
 
     public static void lockToVanillaModelFor(LivingEntity mob){
-        if(PlayerAnimatorHelper.isAnimating(mob)
-                && MobPlayerAnimatorClient.getClientConfig().is_emf_animation_halt_enabled
-                && MobPlayerAnimatorClient.getClientConfigHelper().isAnimationHaltedForEMF(mob)
-                && MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
+        if(shouldHaltActiveAnimation(mob) && MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
             EMFAnimationApi.lockEntityToVanillaModel(EMFAnimationApi.emfEntityOf(mob));
             EMF_VANILLA_MODELS_FORCED.add(mob.getUUID());
         }
     }
 
-    public static void pauseEMFAnimationsFor(LivingEntity mob, EntityModel<?> model) {
-        if(PlayerAnimatorHelper.isAnimating(mob)
+    private static boolean shouldHaltActiveAnimation(LivingEntity mob) {
+        return PlayerAnimatorHelper.isAnimating(mob)
                 && MobPlayerAnimatorClient.getClientConfig().is_emf_animation_halt_enabled
                 && MobPlayerAnimatorClient.getClientConfigHelper().isAnimationHaltedForEMF(mob)
-                && !MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
+                && MobPlayerAnimatorClient.getClientConfigHelper().isAnimatingAnyNonBlacklistedAnimation(mob);
+    }
+
+    public static void pauseEMFAnimationsFor(LivingEntity mob, EntityModel<?> model) {
+        if(shouldHaltActiveAnimation(mob) && !MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
             EMF_ANIMATIONS_HALTED.add(mob.getUUID());
             // only pause relevant parts for Player Animator
             if(model instanceof PlayerModel<?> playerModel){
