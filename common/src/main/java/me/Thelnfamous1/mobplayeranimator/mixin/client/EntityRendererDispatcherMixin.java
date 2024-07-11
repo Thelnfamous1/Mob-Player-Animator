@@ -1,7 +1,7 @@
 package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimator;
+import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimatorClient;
 import me.Thelnfamous1.mobplayeranimator.compat.EMFCompat;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -18,7 +18,7 @@ public class EntityRendererDispatcherMixin {
     @Inject(method = "render",
             at = @At(value = "HEAD"))
     private <E extends Entity> void emf$grabEntity(E entity, double x, double y, double z, float yaw, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
-        if(MobPlayerAnimator.isEMFLoaded() && entity instanceof LivingEntity mob){
+        if(MobPlayerAnimatorClient.isEMFLoaded() && entity instanceof LivingEntity mob){
             EMFCompat.lockToVanillaModelFor(mob);
         }
     }

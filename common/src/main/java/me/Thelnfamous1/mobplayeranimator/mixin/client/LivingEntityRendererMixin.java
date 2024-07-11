@@ -1,7 +1,7 @@
 package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimator;
+import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimatorClient;
 import me.Thelnfamous1.mobplayeranimator.compat.EMFCompat;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -48,7 +48,7 @@ public abstract class LivingEntityRendererMixin<
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V", shift = At.Shift.BEFORE))
 
     protected void pre_renderToBuffer(T $$0, float $$1, float $$2, PoseStack $$3, MultiBufferSource $$4, int $$5, CallbackInfo ci) {
-        if(MobPlayerAnimator.isEMFLoaded()){
+        if(MobPlayerAnimatorClient.isEMFLoaded()){
             EMFCompat.pauseEMFAnimationsFor($$0, this.getModel());
         }
     }
@@ -57,7 +57,7 @@ public abstract class LivingEntityRendererMixin<
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V", shift = At.Shift.AFTER))
 
     protected void post_renderToBuffer(T $$0, float $$1, float $$2, PoseStack $$3, MultiBufferSource $$4, int $$5, CallbackInfo ci) {
-        if(MobPlayerAnimator.isEMFLoaded()){
+        if(MobPlayerAnimatorClient.isEMFLoaded()){
             EMFCompat.resumeEMFAnimationsFor($$0, this.getModel());
         }
     }
