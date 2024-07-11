@@ -23,7 +23,7 @@ public class MPAClientConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public String[] emf_animation_halt_animation_blacklist = new String[]{"seriousplayeranimations:blank_loop"};
     @ConfigEntry.Gui.Tooltip
-    public String[] emf_force_vanilla_models = new String[]{"minecraft:vindicator"};
+    public String[] emf_force_vanilla_models = new String[]{};
     @ConfigEntry.Gui.Excluded
     @Comment("""
             For these entities, apply specific model modifications to their EMF model to adjust it during an EMF animation halt. \n
