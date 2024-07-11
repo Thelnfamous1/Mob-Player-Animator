@@ -18,6 +18,7 @@
     "client.IllagerModelMixin",
     "client.LivingEntityRendererMixin",
     "client.MobRendererMixin",
+    "client.ModelPartAccessor",
     "client.PiglinModelMixin",
     "client.SkeletonModelMixin",
     "client.ZombieVillagerModelMixin"

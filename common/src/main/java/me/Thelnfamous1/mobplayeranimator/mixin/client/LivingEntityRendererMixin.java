@@ -58,7 +58,7 @@ public abstract class LivingEntityRendererMixin<
 
     protected void post_renderToBuffer(T $$0, float $$1, float $$2, PoseStack $$3, MultiBufferSource $$4, int $$5, CallbackInfo ci) {
         if(MobPlayerAnimator.isEMFLoaded()){
-            EMFCompat.resumeEMFAnimationsFor($$0);
+            EMFCompat.resumeEMFAnimationsFor($$0, this.getModel());
         }
     }
 }
