@@ -27,7 +27,7 @@ public class MPAClientConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     @Comment("""
             For these entities, apply specific model modifications to their EMF model to adjust it during an EMF animation halt. \n
-            Refer to the wiki for formatting instructions: https://github.com/Thelnfamous1/Mob-Player-Animator/wiki. \n
+            Refer to the wiki for formatting instructions: https://github.com/Thelnfamous1/Mob-Player-Animator/wiki/EMF-Model-Modifiers. \n
             Use a JSON validator such as https://jsonlint.com/ to ensure your JSON strings are correct.
             """ )
     public LinkedHashMap<String, String> emf_model_modifiers = new LinkedHashMap<>() {

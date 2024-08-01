@@ -30,16 +30,24 @@ public class ClientConfigHelper {
     private final Set<ResourceLocation> emfAnimationHaltAnimationBlacklist = new HashSet<>();
     private final Map<EntityType<?>, MPAModelModifier> emfModelModifiers = new LinkedHashMap<>();
 
-    public ClientConfigHelper(MPAClientConfig clientConfig){
+    public ClientConfigHelper(MPAClientConfig clientConfig, boolean log){
         this.clientConfig = clientConfig;
-        fillEntityTypeSetWithEntries(clientConfig.emf_animation_halt_blacklist, this.emfAnimationHaltBlacklist, "emf_animation_halt_blacklist");
-        fillEntityTypeSetWithEntries(clientConfig.emf_force_vanilla_models, this.emfForceVanillaModels, "emf_force_vanilla_models");
-        fillResourceLocationSetWithEntries(clientConfig.emf_animation_halt_animation_blacklist, this.emfAnimationHaltAnimationBlacklist, "emf_animation_halt_animation_blacklist");
+        fillEntityTypeSetWithEntries(clientConfig.emf_animation_halt_blacklist, this.emfAnimationHaltBlacklist, "emf_animation_halt_blacklist", log);
+        fillEntityTypeSetWithEntries(clientConfig.emf_force_vanilla_models, this.emfForceVanillaModels, "emf_force_vanilla_models", log);
+        fillResourceLocationSetWithEntries(clientConfig.emf_animation_halt_animation_blacklist, this.emfAnimationHaltAnimationBlacklist, "emf_animation_halt_animation_blacklist", log);
         clientConfig.emf_model_modifiers.forEach((key, value) -> {
             Codec<? extends EntityType<?>> resourceLocationToEntityType = getResourceLocationToEntityTypeCodec();
-            EntityType<?> entityType = resourceLocationToEntityType.parse(JsonOps.INSTANCE, new JsonPrimitive(key)).getOrThrow(false, Constants.LOG::error);
+            EntityType<?> entityType = resourceLocationToEntityType.parse(JsonOps.INSTANCE, new JsonPrimitive(key)).result().orElse(null);
+            if(entityType == null) {
+                if(log) Constants.LOG.error("Could not parse {} entry key {}, not a valid namespaced id", "emf_model_modifiers", key);
+                return;
+            }
             MPAModelModifier modelModifier = MPAModelModifier.CODEC.parse(JsonOps.INSTANCE, new Gson().fromJson(value, JsonObject.class)).getOrThrow(false, Constants.LOG::error);
-            Constants.LOG.info("Entered {}:{} into the " + "emf_model_modifiers" + " map!", key, value);
+            if(modelModifier == null){
+                if(log) Constants.LOG.error("Could not parse {} entry value {} mapped to {}, not a valid model modifier", "emf_model_modifiers", key, value);
+                return;
+            }
+            if(log) Constants.LOG.debug("Entered {}:{} into the " + "emf_model_modifiers" + " map!", key, value);
             this.emfModelModifiers.put(entityType, modelModifier);
         });
     }
@@ -53,29 +61,31 @@ public class ClientConfigHelper {
         }, BuiltInRegistries.ENTITY_TYPE::getKey);
     }
 
-    private static void fillResourceLocationSetWithEntries(String[] configEntries, Set<ResourceLocation> configSet, String configName) {
+    private static void fillResourceLocationSetWithEntries(String[] configEntries, Set<ResourceLocation> configSet, String configName, boolean log) {
         for(String entry : configEntries){
             ResourceLocation id = ResourceLocation.tryParse(entry);
             if(id == null){
-                Constants.LOG.error("Could not parse " + configName + " entry {}, not a valid namespaced id", entry);
+                if(log) Constants.LOG.error("Could not parse " + configName + " entry {}, not a valid namespaced id", entry);
             } else{
                 configSet.add(id);
-                Constants.LOG.info("Entered {} into the " + configName + " set!", id);
+                if(log) Constants.LOG.info("Entered {} into the " + configName + " set!", id);
             }
         }
     }
 
-    private static void fillEntityTypeSetWithEntries(String[] configEntries, Set<EntityType<?>> configSet, String configName) {
+    private static void fillEntityTypeSetWithEntries(String[] configEntries, Set<EntityType<?>> configSet, String configName, boolean log) {
         for(String entry : configEntries){
             ResourceLocation id = ResourceLocation.tryParse(entry);
             if(id == null){
-                Constants.LOG.error("Could not parse " + configName + " entry {}, not a valid namespaced id", entry);
+                if(log) Constants.LOG.error("Could not parse " + configName + " entry {}, not a valid namespaced id", entry);
             } else{
                 Optional<EntityType<?>> entityType = BuiltInRegistries.ENTITY_TYPE.getOptional(id);
                 entityType.ifPresentOrElse(et -> {
                     configSet.add(et);
-                    Constants.LOG.info("Entered {} into the " + configName + " set!", id);
-                }, () -> Constants.LOG.error("Could not find " + configName + " entry {}, not a valid entity type", id));
+                    if(log) Constants.LOG.info("Entered {} into the " + configName + " set!", id);
+                }, () -> {
+                    if(log) Constants.LOG.error("Could not find " + configName + " entry {}, not a valid entity type", id);
+                });
             }
         }
     }

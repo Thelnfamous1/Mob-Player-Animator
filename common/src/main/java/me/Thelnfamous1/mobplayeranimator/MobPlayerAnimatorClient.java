@@ -26,19 +26,19 @@ public class MobPlayerAnimatorClient {
         holder.registerSaveListener((ch, ccw) -> onConfigUpdated(ccw));
         // This does not run when the config is first loaded, have to manually update config below
         holder.registerLoadListener((ch, ccw) -> onConfigUpdated(ccw));
-        // Manual server config update
-        updateClientConfig(holder.getConfig().client);
+        // Manual client config update
+        updateClientConfig(holder.getConfig().client, false);
     }
 
     private static InteractionResult onConfigUpdated(MPAClientConfigWrapper ccw) {
-        updateClientConfig(ccw.client);
+        updateClientConfig(ccw.client, true);
         return InteractionResult.PASS;
     }
 
-    private static void updateClientConfig(MPAClientConfig config) {
+    private static void updateClientConfig(MPAClientConfig config, boolean log) {
         clientConfig = config;
-        clientConfigHelper = new ClientConfigHelper(config);
-        Constants.LOG.info("Client config updated!");
+        clientConfigHelper = new ClientConfigHelper(config, log);
+        if(log) Constants.LOG.info("Client config updated!");
     }
 
     public static MPAClientConfig getClientConfig() {
