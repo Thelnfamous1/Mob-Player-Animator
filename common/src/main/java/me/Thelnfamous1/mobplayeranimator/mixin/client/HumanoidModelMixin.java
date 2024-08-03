@@ -49,14 +49,6 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
         }
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "HEAD"))
-    private void pre_setupAnim(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
-        if(!PlayerModel.class.isInstance(this)){
-            //to not make everything wrong
-            PlayerAnimatorHelper.setDefaultPivot(this);
-        }
-    }
-
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"))
     private void post_setupAnim(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){

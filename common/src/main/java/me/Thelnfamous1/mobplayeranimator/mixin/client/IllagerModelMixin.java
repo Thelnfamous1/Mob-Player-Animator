@@ -84,12 +84,6 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
         return ImmutableList.of(this.mobplayeranimator$body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.hat);
     }
 
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At(value = "HEAD"))
-    private void pre_setupAnim(T livingEntity, float f, float g, float h, float i, float j, CallbackInfo ci){
-        //to not make everything wrong
-        PlayerAnimatorHelper.setDefaultPivot(this);
-    }
-
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("TAIL"))
     private void post_setupAnim(T illager, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
         PlayerAnimatorHelper.setEmote(this, PlayerAnimatorHelper.getAnimation(illager));

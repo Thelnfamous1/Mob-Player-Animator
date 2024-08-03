@@ -85,6 +85,9 @@ repositories {
     flatDir {
         dirs 'lib'
     }
+    maven {
+        url "https://cursemaven.com"
+    }
 }
 
 dependencies {
@@ -109,6 +112,7 @@ dependencies {
     implementation fg.deobf("maven.modrinth:guard-villagers:${project.guard_villagers_version}")
     implementation fg.deobf("maven.modrinth:entity-model-features:${project.emf_version}")
     implementation fg.deobf("maven.modrinth:entitytexturefeatures:${project.etf_version}-forge")
+    runtimeOnly fg.deobf("curse.maven:all-bark-all-bite-833755:4817227")
     runtimeOnly fg.deobf("maven.modrinth:serious-player-animations:${project.spa_version}-forge")
     runtimeOnly fg.deobf("maven.modrinth:not-enough-animations:${project.nea_version}")
 }
