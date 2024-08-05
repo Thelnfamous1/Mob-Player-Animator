@@ -34,6 +34,10 @@ dependencies {
     runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // Mod Compat
+    modRuntimeOnly "maven.modrinth:minecraft-comes-alive-reborn:${mcar_version}"
+    modRuntimeOnly "maven.modrinth:architectury-api:${architectury_version}"
 }
 
 loom {

@@ -115,6 +115,8 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:all-bark-all-bite-833755:4817227")
     runtimeOnly fg.deobf("maven.modrinth:serious-player-animations:${project.spa_version}-forge")
     runtimeOnly fg.deobf("maven.modrinth:not-enough-animations:${project.nea_version}")
+    runtimeOnly fg.deobf("maven.modrinth:minecraft-comes-alive-reborn:${mcar_version}")
+    runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}")
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -37,6 +37,7 @@ dependencies {
     // Mod Compatibility
     implementation("maven.modrinth:entity-model-features:${project.emf_version}")
     implementation("maven.modrinth:entitytexturefeatures:${project.etf_version}-forge")
+    implementation("maven.modrinth:minecraft-comes-alive-reborn:${project.mcar_version}")
 }
 tasks.withType(Javadoc).configureEach {
     configure(options) {

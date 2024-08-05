@@ -21,7 +21,8 @@
     "client.ModelPartAccessor",
     "client.PiglinModelMixin",
     "client.SkeletonModelMixin",
-    "client.ZombieVillagerModelMixin"
+    "client.ZombieVillagerModelMixin",
+    "client.compat.minecraft_comes_alive_reborn.VillagerEntityBaseModelMCAMixin"
   ],
   "server": [
   ],

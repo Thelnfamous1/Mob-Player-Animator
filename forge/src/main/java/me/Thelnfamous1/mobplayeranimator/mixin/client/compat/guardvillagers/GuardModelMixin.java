@@ -1,4 +1,4 @@
-package me.Thelnfamous1.mobplayeranimator.mixin.client;
+package me.Thelnfamous1.mobplayeranimator.mixin.client.compat.guardvillagers;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
