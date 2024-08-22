@@ -117,6 +117,7 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:not-enough-animations:${project.nea_version}")
     runtimeOnly fg.deobf("maven.modrinth:minecraft-comes-alive-reborn:${mcar_version}")
     runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}")
+    runtimeOnly fg.deobf("maven.modrinth:bendy-lib:${bendylib_version}-forge")
 }
 
 tasks.withType(JavaCompile).configureEach {
