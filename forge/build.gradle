@@ -118,6 +118,7 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:minecraft-comes-alive-reborn:${mcar_version}")
     runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}")
     runtimeOnly fg.deobf("maven.modrinth:bendy-lib:${bendylib_version}-forge")
+    runtimeOnly(fg.deobf("maven.modrinth:simply-swords:${simply_swords_version}-forge"))
 }
 
 tasks.withType(JavaCompile).configureEach {

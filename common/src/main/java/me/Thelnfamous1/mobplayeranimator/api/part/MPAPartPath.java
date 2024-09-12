@@ -37,6 +37,10 @@ public class MPAPartPath {
         return this.path;
     }
 
+    public String getLastChild(){
+        return this.linkedParts.getLast();
+    }
+
     @Nullable
     public ModelPart findPart(ModelPart root){
         ModelPart current = root;

@@ -8,12 +8,11 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.kosmx.playerAnim.api.layered.*;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
-import dev.kosmx.playerAnim.core.util.Pair;
 import dev.kosmx.playerAnim.impl.IAnimatedPlayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import me.Thelnfamous1.mobplayeranimator.Constants;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import me.Thelnfamous1.mobplayeranimator.api.part.MPAModelModifier;
-import me.Thelnfamous1.mobplayeranimator.mixin.AnimationStackAccessor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -101,35 +100,28 @@ public class ClientConfigHelper {
     public boolean isAnimatingAnyNonBlacklistedAnimation(LivingEntity entity){
         if(entity instanceof IAnimatedPlayer animatedPlayer){
             AnimationStack animationStack = animatedPlayer.getAnimationStack();
+            if(this.emfAnimationHaltAnimationBlacklist.isEmpty()){
+                return animationStack.isActive();
+            }
             return isAnyNonBlacklistedAnimationActive(animationStack, this.emfAnimationHaltAnimationBlacklist);
         }
         return false;
     }
 
-    private static boolean isAnyNonBlacklistedAnimationActive(IAnimation animation, Iterable<ResourceLocation> blacklistedAnimationIds){
-        if (animation instanceof KeyframeAnimationPlayer keyframeAnimationPlayer) {
-            if(keyframeAnimationPlayer.isActive()){
-                for(ResourceLocation id : blacklistedAnimationIds){
-                    KeyframeAnimation blacklistedAnimation = PlayerAnimationRegistry.getAnimation(id);
-                    if(!keyframeAnimationPlayer.getData().equals(blacklistedAnimation)){
-                        return true;
-                    }
+    private static boolean isAnyNonBlacklistedAnimationActive(IAnimation animation, Collection<ResourceLocation> blacklistedAnimationIds){
+        return PlayerAnimatorHelper.recursiveAnimationTest(animation, keyframeAnimationPlayer -> isNonBlacklistedAnimationActive(keyframeAnimationPlayer, blacklistedAnimationIds));
+    }
+
+    private static boolean isNonBlacklistedAnimationActive(KeyframeAnimationPlayer keyframeAnimationPlayer, Collection<ResourceLocation> blacklistedAnimationIds) {
+        if (keyframeAnimationPlayer.isActive()) {
+            if(blacklistedAnimationIds.isEmpty()) return true;
+
+            for (ResourceLocation id : blacklistedAnimationIds) {
+                KeyframeAnimation blacklistedAnimation = PlayerAnimationRegistry.getAnimation(id);
+                if (!keyframeAnimationPlayer.getData().equals(blacklistedAnimation)) {
+                    return true;
                 }
             }
-            return false;
-        } else if (animation instanceof ModifierLayer<?> modifierLayer) {
-            IAnimation layerAnimation = modifierLayer.getAnimation();
-            return layerAnimation != null && isAnyNonBlacklistedAnimationActive(layerAnimation, blacklistedAnimationIds);
-        } else if (animation instanceof AnimationContainer<?> animationContainer) {
-            IAnimation containerAnim = animationContainer.getAnim();
-            return containerAnim != null && isAnyNonBlacklistedAnimationActive(containerAnim, blacklistedAnimationIds);
-        } else if (animation instanceof AnimationStack animationStack) {
-            ArrayList<Pair<Integer, IAnimation>> prioritizedLayers = ((AnimationStackAccessor) animationStack).mobplayeranimator$getLayers();
-            for (Pair<Integer, IAnimation> prioritizedLayer : prioritizedLayers) {
-                IAnimation layer = prioritizedLayer.getRight();
-                if (isAnyNonBlacklistedAnimationActive(layer, blacklistedAnimationIds)) return true;
-            }
-            return false;
         }
         return false;
     }

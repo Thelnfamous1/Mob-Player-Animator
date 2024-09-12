@@ -4,7 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import dev.kosmx.playerAnim.api.TransformType;
+import dev.kosmx.playerAnim.api.layered.*;
 import dev.kosmx.playerAnim.core.impl.AnimationProcessor;
+import dev.kosmx.playerAnim.core.util.Pair;
 import dev.kosmx.playerAnim.core.util.SetableSupplier;
 import dev.kosmx.playerAnim.core.util.Vec3f;
 import dev.kosmx.playerAnim.impl.Helper;
@@ -13,6 +15,9 @@ import dev.kosmx.playerAnim.impl.IMutableModel;
 import dev.kosmx.playerAnim.impl.IUpperPartHelper;
 import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import dev.kosmx.playerAnim.impl.animation.IBendHelper;
+import me.Thelnfamous1.mobplayeranimator.api.part.MPABodyPart;
+import me.Thelnfamous1.mobplayeranimator.mixin.AnimationStackAccessor;
+import me.Thelnfamous1.mobplayeranimator.platform.Services;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
@@ -21,7 +26,13 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.AbstractIllager;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class PlayerAnimatorHelper {
 
@@ -215,5 +226,77 @@ public class PlayerAnimatorHelper {
 
     private static void resetBend(ModelPart part) {
         IBendHelper.INSTANCE.bend(part, null);
+    }
+
+    public static boolean recursiveAnimationTest(IAnimation animation, Predicate<KeyframeAnimationPlayer> animationTest) {
+        if (animation instanceof KeyframeAnimationPlayer keyframeAnimationPlayer) {
+            return animationTest.test(keyframeAnimationPlayer);
+        } else if (animation instanceof ModifierLayer<?> modifierLayer) {
+            IAnimation layerAnimation = modifierLayer.getAnimation();
+            return layerAnimation != null && recursiveAnimationTest(layerAnimation, animationTest);
+        } else if (animation instanceof AnimationContainer<?> animationContainer) {
+            IAnimation containerAnim = animationContainer.getAnim();
+            return containerAnim != null && recursiveAnimationTest(containerAnim, animationTest);
+        } else if (animation instanceof AnimationStack animationStack) {
+            ArrayList<Pair<Integer, IAnimation>> prioritizedLayers = ((AnimationStackAccessor) animationStack).mobplayeranimator$getLayers();
+            for (Pair<Integer, IAnimation> prioritizedLayer : prioritizedLayers) {
+                IAnimation layer = prioritizedLayer.getRight();
+                if (recursiveAnimationTest(layer, animationTest)) return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private static void recursiveAnimationConsume(IAnimation animation, Consumer<KeyframeAnimationPlayer> animationConsumer) {
+        if (animation instanceof KeyframeAnimationPlayer keyframeAnimationPlayer) {
+            animationConsumer.accept(keyframeAnimationPlayer);
+        } else if (animation instanceof ModifierLayer<?> modifierLayer) {
+            IAnimation layerAnimation = modifierLayer.getAnimation();
+            if(layerAnimation != null) recursiveAnimationConsume(layerAnimation, animationConsumer);
+        } else if (animation instanceof AnimationContainer<?> animationContainer) {
+            IAnimation containerAnim = animationContainer.getAnim();
+            if(containerAnim != null) recursiveAnimationConsume(containerAnim, animationConsumer);
+        } else if (animation instanceof AnimationStack animationStack) {
+            ArrayList<Pair<Integer, IAnimation>> prioritizedLayers = ((AnimationStackAccessor) animationStack).mobplayeranimator$getLayers();
+            for (Pair<Integer, IAnimation> prioritizedLayer : prioritizedLayers) {
+                IAnimation layer = prioritizedLayer.getRight();
+                recursiveAnimationConsume(layer, animationConsumer);
+            }
+        }
+    }
+
+    public static Set<MPABodyPart> getCurrentlyAnimatedParts(LivingEntity entity){
+        if(entity instanceof IAnimatedPlayer animatedPlayer){
+            AnimationStack animationStack = animatedPlayer.getAnimationStack();
+            return getCurrentlyAnimatedParts(animationStack);
+        }
+        return Set.of();
+    }
+
+    public static Set<MPABodyPart> getCurrentlyAnimatedParts(IAnimation animation){
+        Set<MPABodyPart> activeParts = new HashSet<>();
+        recursiveAnimationConsume(animation, keyframeAnimationPlayer -> addCurrentlyTransformedParts(keyframeAnimationPlayer, activeParts));
+        return activeParts;
+    }
+
+    private static void addCurrentlyTransformedParts(KeyframeAnimationPlayer keyframeAnimationPlayer, Set<MPABodyPart> activeParts) {
+        if(!keyframeAnimationPlayer.isActive()) return;
+
+        for(Map.Entry<String, KeyframeAnimationPlayer.BodyPart> part : keyframeAnimationPlayer.bodyParts.entrySet()){
+            if(isActive(part.getValue())){
+                String partName = part.getKey();
+                MPABodyPart mpaBodyPart = MPABodyPart.byName(partName);
+                if(mpaBodyPart != null){
+                    activeParts.add(mpaBodyPart);
+                } else if(Services.PLATFORM.isDevelopmentEnvironment()){
+                    throw new IllegalArgumentException("Invalid part name for MPABodyPart: " + partName);
+                }
+            }
+        }
+    }
+
+    public static boolean isActive(KeyframeAnimationPlayer.BodyPart bodyPart) {
+        return bodyPart.part != null && bodyPart.part.isEnabled();
     }
 }

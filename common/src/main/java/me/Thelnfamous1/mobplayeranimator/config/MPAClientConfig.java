@@ -4,6 +4,7 @@ import com.mojang.serialization.JsonOps;
 import me.Thelnfamous1.mobplayeranimator.api.part.MPAModelModifier;
 import me.Thelnfamous1.mobplayeranimator.api.part.MPAPartModifier;
 import me.Thelnfamous1.mobplayeranimator.api.part.MPAPartPath;
+import me.Thelnfamous1.mobplayeranimator.api.part.MPABodyPart;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
@@ -35,16 +36,34 @@ public class MPAClientConfig implements ConfigData {
             this.put("minecraft:vindicator", MPAModelModifier.CODEC
                     .encodeStart(
                             JsonOps.INSTANCE,
-                            MPAModelModifier.create()
-                                    .withPartModifier(MPAPartPath.of("left_leg#EMF_left_leg"), new MPAPartModifier().withOffsetPos(KeyframeAnimations.posVec(0, -12, 0)))
-                                    .withPartModifier(MPAPartPath.of("right_leg#EMF_right_leg"), new MPAPartModifier().withOffsetPos(KeyframeAnimations.posVec(0, -12, 0)))
-                                    .withPartModifier(MPAPartPath.of("left_arm"), new MPAPartModifier().withVisibility(true))
-                                    .withPartModifier(MPAPartPath.of("right_arm"), new MPAPartModifier().withVisibility(true))
-                                    .withPartModifier(MPAPartPath.of("body#EMF_body#EMF_arms_rotation"), new MPAPartModifier().withVisibility(false))
+                            MPAModelModifier.builder()
+                                    .withPartModifier(MPAPartPath.of("left_leg#EMF_left_leg"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.LEFT_LEG)
+                                            .withOffsetPos(KeyframeAnimations.posVec(0, -12, 0))
+                                            .build())
+                                    .withPartModifier(MPAPartPath.of("right_leg#EMF_right_leg"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.RIGHT_LEG)
+                                            .withOffsetPos(KeyframeAnimations.posVec(0, -12, 0))
+                                            .build())
+                                    .withPartModifier(MPAPartPath.of("left_arm"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.LEFT_ARM)
+                                            .withVisibility(true)
+                                            .build())
+                                    .withPartModifier(MPAPartPath.of("right_arm"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.RIGHT_ARM)
+                                            .withVisibility(true)
+                                            .build())
+                                    .withPartModifier(MPAPartPath.of("body#EMF_body#EMF_arms_rotation"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.LEFT_ARM, MPABodyPart.RIGHT_ARM)
+                                            .withVisibility(false)
+                                            .build())
+                                    .build()
                     )
                     .result().get().toString());
         }
     };
+    @ConfigEntry.Gui.Tooltip
+    public boolean guess_emf_part_modifier_animated_groups = true;
 
     public MPAClientConfig() {
     }

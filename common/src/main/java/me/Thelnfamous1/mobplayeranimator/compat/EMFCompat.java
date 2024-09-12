@@ -5,6 +5,7 @@ import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimatorClient;
 import me.Thelnfamous1.mobplayeranimator.api.IllagerModelAccess;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import me.Thelnfamous1.mobplayeranimator.api.part.*;
+import me.Thelnfamous1.mobplayeranimator.mixin.client.EMFModelPartWithStateAccessor;
 import me.Thelnfamous1.mobplayeranimator.mixin.client.ModelPartAccessor;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -45,14 +46,14 @@ public class EMFCompat {
         return "entity_model_features.config.variable_explanation." + Constants.MOD_ID + "." + key;
     }
 
-    public static void lockToVanillaModelFor(LivingEntity mob){
-        if(shouldHaltActiveAnimation(mob) && MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
+    public static void lockToVanillaModelFor(LivingEntity mob, EntityModel<?> model){
+        if(hasEMFAnimations(model) && shouldHaltEMFAnimations(mob) && MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
             EMFAnimationApi.lockEntityToVanillaModel(EMFAnimationApi.emfEntityOf(mob));
             EMF_VANILLA_MODELS_FORCED.add(mob.getUUID());
         }
     }
 
-    private static boolean shouldHaltActiveAnimation(LivingEntity mob) {
+    private static boolean shouldHaltEMFAnimations(LivingEntity mob) {
         return PlayerAnimatorHelper.isAnimating(mob)
                 && MobPlayerAnimatorClient.getClientConfig().is_emf_animation_halt_enabled
                 && MobPlayerAnimatorClient.getClientConfigHelper().isAnimationHaltedForEMF(mob)
@@ -60,52 +61,105 @@ public class EMFCompat {
     }
 
     public static void pauseEMFAnimationsFor(LivingEntity mob, EntityModel<?> model) {
-        if(shouldHaltActiveAnimation(mob) && !MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
+        if(hasEMFAnimations(model) && shouldHaltEMFAnimations(mob) && !MobPlayerAnimatorClient.getClientConfigHelper().isVanillaModelForcedForEMF(mob)){
             EMF_ANIMATIONS_HALTED.add(mob.getUUID());
-            List<ModelPart> pausedParts = new ArrayList<>();
-            // store the original poses for affected parts, then modify them
+            Set<ModelPart> partsToPause = new HashSet<>();
+            Set<MPABodyPart> animatedParts = PlayerAnimatorHelper.getCurrentlyAnimatedParts(mob);
+            boolean activeHead = animatedParts.contains(MPABodyPart.HEAD);
+            boolean activeTorso = animatedParts.contains(MPABodyPart.TORSO);
+            boolean activeLeftArm = animatedParts.contains(MPABodyPart.LEFT_ARM);
+            boolean activeRightArm = animatedParts.contains(MPABodyPart.RIGHT_ARM);
+            boolean activeLeftLeg = animatedParts.contains(MPABodyPart.LEFT_LEG);
+            boolean activeRightLeg = animatedParts.contains(MPABodyPart.RIGHT_LEG);
+            // only pause relevant parts for Player Animator if they are being animated by it
+            if(model instanceof PlayerModel<?> playerModel){
+                if(activeHead){
+                    partsToPause.add(playerModel.head);
+                    partsToPause.add(playerModel.hat);
+                }
+                if(activeTorso){
+                    partsToPause.add(playerModel.body);
+                }
+                if(activeLeftArm){
+                    partsToPause.add(playerModel.leftArm);
+                    partsToPause.add(playerModel.leftSleeve);
+                }
+                if(activeRightArm){
+                    partsToPause.add(playerModel.rightArm);
+                    partsToPause.add(playerModel.rightSleeve);
+                }
+                if(activeLeftLeg){
+                    partsToPause.add(playerModel.leftLeg);
+                    partsToPause.add(playerModel.leftPants);
+                }
+                if(activeRightLeg){
+                    partsToPause.add(playerModel.rightLeg);
+                    partsToPause.add(playerModel.rightPants);
+                }
+            } else if(model instanceof HumanoidModel<?> humanoidModel) {
+                if(activeHead){
+                    partsToPause.add(humanoidModel.head);
+                    partsToPause.add(humanoidModel.hat);
+                }
+                if(activeTorso){
+                    partsToPause.add(humanoidModel.body);
+                }
+                if(activeLeftArm){
+                    partsToPause.add(humanoidModel.leftArm);
+                }
+                if(activeRightArm){
+                    partsToPause.add(humanoidModel.rightArm);
+                }
+                if(activeLeftLeg){
+                    partsToPause.add(humanoidModel.leftLeg);
+                }
+                if(activeRightLeg){
+                    partsToPause.add(humanoidModel.rightLeg);
+                }
+            } else if(model instanceof IllagerModel<?> illagerModel){
+                IllagerModelAccess modelAccess = (IllagerModelAccess) illagerModel;
+                if(activeHead){
+                    partsToPause.add(modelAccess.mobplayeranimator$getHead());
+                    partsToPause.add(modelAccess.mobplayeranimator$getHead());
+                }
+                if(activeTorso){
+                    partsToPause.add(modelAccess.mobplayeranimator$getBody());
+                }
+                if(activeLeftArm || activeRightArm){
+                    partsToPause.add(modelAccess.mobplayeranimator$getArms());
+                    if(activeLeftArm){
+                        partsToPause.add(modelAccess.mobplayeranimator$getLeftArm());
+                    }
+                    if(activeRightArm){
+                        partsToPause.add(modelAccess.mobplayeranimator$getRightArm());
+                    }
+                }
+                if(activeLeftLeg){
+                    partsToPause.add(modelAccess.mobplayeranimator$getLeftLeg());
+                }
+                if(activeRightLeg){
+                    partsToPause.add(modelAccess.mobplayeranimator$getRightLeg());
+                }
+            }
             MPAModelModifier modelModifier = MobPlayerAnimatorClient.getClientConfigHelper().getModelModifier(mob.getType());
             if(modelModifier != null){
                 ModelPart root = ((IEMFModel) model).emf$getEMFRootModel();
-                EMF_MODEL_POSES.put(mob.getUUID(), new MPAModelPose(root, modelModifier));
-                pausedParts.addAll(modelModifier.modify(root).values()); // have to add all modified parts so EMF does not override any animations
+                // store the original poses for affected parts
+                EMF_MODEL_POSES.put(mob.getUUID(), new MPAModelPose(root, modelModifier, animatedParts));
+                // Now apply modifications to specific parts
+                Collection<ModelPart> modifiedParts = modelModifier.modify(root, animatedParts).values();
+                partsToPause.addAll(modifiedParts);
             }
-            // only pause relevant parts for Player Animator
-            if(model instanceof PlayerModel<?> playerModel){
-                pausedParts.add(playerModel.head);
-                pausedParts.add(playerModel.hat);
-                pausedParts.add(playerModel.body);
-                pausedParts.add(playerModel.leftArm);
-                pausedParts.add(playerModel.leftSleeve);
-                pausedParts.add(playerModel.rightArm);
-                pausedParts.add(playerModel.rightSleeve);
-                pausedParts.add(playerModel.leftLeg);
-                pausedParts.add(playerModel.leftPants);
-                pausedParts.add(playerModel.rightLeg);
-                pausedParts.add(playerModel.rightPants);
-            } else if(model instanceof HumanoidModel<?> humanoidModel) {
-                pausedParts.add(humanoidModel.head);
-                pausedParts.add(humanoidModel.hat);
-                pausedParts.add(humanoidModel.body);
-                pausedParts.add(humanoidModel.leftArm);
-                pausedParts.add(humanoidModel.rightArm);
-                pausedParts.add(humanoidModel.leftLeg);
-                pausedParts.add(humanoidModel.rightLeg);
-            } else if(model instanceof IllagerModel<?> illagerModel){
-                IllagerModelAccess modelAccess = (IllagerModelAccess) illagerModel;
-                pausedParts.add(illagerModel.getHead());
-                pausedParts.add(illagerModel.getHat());
-                pausedParts.add(modelAccess.mobplayeranimator$getBody());
-                pausedParts.add(modelAccess.mobplayeranimator$getArms());
-                pausedParts.add(modelAccess.mobplayeranimator$getLeftArm());
-                pausedParts.add(modelAccess.mobplayeranimator$getRightArm());
-                pausedParts.add(modelAccess.mobplayeranimator$getLeftLeg());
-                pausedParts.add(modelAccess.mobplayeranimator$getRightLeg());
-            }
-            if(!pausedParts.isEmpty()){
-                EMFAnimationApi.pauseCustomAnimationsForThesePartsOfEntity(EMFAnimationApi.emfEntityOf(mob), pausedParts.toArray(ModelPart[]::new));
+            if(!partsToPause.isEmpty()){
+                EMFAnimationApi.pauseCustomAnimationsForThesePartsOfEntity(EMFAnimationApi.emfEntityOf(mob), partsToPause.toArray(ModelPart[]::new));
             }
         }
+    }
+
+    public static boolean hasEMFAnimations(EntityModel<?> model){
+        IEMFModel emfModel = (IEMFModel) model;
+        return emfModel.emf$isEMFModel()
+                && ((EMFModelPartWithStateAccessor)emfModel.emf$getEMFRootModel()).mobplayeranimator$getTryAnimate().getAnimation() != null;
     }
 
     private static void debugChildren(String name, ModelPart modelPart, LivingEntity mob){

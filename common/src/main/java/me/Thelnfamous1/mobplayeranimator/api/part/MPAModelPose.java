@@ -4,12 +4,13 @@ import net.minecraft.client.model.geom.ModelPart;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MPAModelPose {
     private final Map<MPAPartPath, MPAPartPose> partPoses = new HashMap<>();
 
-    public MPAModelPose(ModelPart root, MPAModelModifier modelModifier){
-        modelModifier.getAffectedParts(root).forEach((partPath, optional) ->
+    public MPAModelPose(ModelPart root, MPAModelModifier modelModifier, Set<MPABodyPart> animatedParts){
+        modelModifier.getAffectedParts(root, animatedParts).forEach((partPath, optional) ->
                 optional.ifPresent(part -> this.partPoses.put(partPath, new MPAPartPose(part))));
     }
 

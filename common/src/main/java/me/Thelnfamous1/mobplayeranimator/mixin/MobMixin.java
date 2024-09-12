@@ -30,6 +30,7 @@ public abstract class MobMixin extends LivingEntity implements IAnimatedPlayer {
     private final AnimationStack bettermobcombat$animationStack = bettermobcombat$createAnimationStack();
     @Unique
     private final AnimationApplier bettermobcombat$animationApplier = new AnimationApplier(bettermobcombat$animationStack);
+
     protected MobMixin(EntityType<? extends Mob> $$0, Level $$1) {
         super($$0, $$1);
     }
