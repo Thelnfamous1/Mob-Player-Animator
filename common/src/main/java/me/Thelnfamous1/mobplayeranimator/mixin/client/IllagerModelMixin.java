@@ -11,6 +11,7 @@ import dev.kosmx.playerAnim.impl.IPlayerModel;
 import me.Thelnfamous1.mobplayeranimator.api.FirstPersonTracker;
 import me.Thelnfamous1.mobplayeranimator.api.IllagerModelAccess;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
+import me.Thelnfamous1.mobplayeranimator.api.part.HumanoidBodyPose;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.IllagerModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -37,6 +38,7 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
     @Shadow @Final private ModelPart rightLeg;
     @Shadow @Final private ModelPart leftLeg;
     @Shadow @Final private ModelPart arms;
+    @Unique private HumanoidBodyPose mobplayeranimator$initialBodyPose;
 
     @Shadow public abstract ModelPart getHead();
 
@@ -59,9 +61,13 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
     private void post_init(ModelPart root, CallbackInfo ci){
         // IllagerModel does not store the "body" ModelPart as a field
         this.mobplayeranimator$body = root.getChild("body");
-
         PlayerAnimatorHelper.initBend(root, this);
         PlayerAnimatorHelper.initEmoteSupplier(this, this.mobplayeranimator$emoteSupplier);
+        this.mobplayeranimator$initialBodyPose = new HumanoidBodyPose(
+                this.head.storePose(),
+                this.mobplayeranimator$body.storePose(),
+                this.leftArm.storePose(), this.rightArm.storePose(),
+                this.leftLeg.storePose(), this.rightLeg.storePose());
     }
 
     @Override
@@ -82,6 +88,11 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
     @Unique
     private Iterable<ModelPart> mobplayeranimator$bodyParts() {
         return ImmutableList.of(this.mobplayeranimator$body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.hat);
+    }
+
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("HEAD"))
+    private void pre_setupAnim(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
+        PlayerAnimatorHelper.setDefaultPivot(this);
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("TAIL"))
@@ -172,5 +183,10 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
     @Override
     public void mobplayeranimator$setFirstPersonNext(boolean firstPersonNext) {
         this.mobplayeranimator$firstPersonNext = firstPersonNext;
+    }
+
+    @Override
+    public HumanoidBodyPose mobplayeranimator$getInitialBodyPose() {
+        return this.mobplayeranimator$initialBodyPose;
     }
 }

@@ -119,6 +119,7 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}")
     runtimeOnly fg.deobf("maven.modrinth:bendy-lib:${bendylib_version}-forge")
     runtimeOnly(fg.deobf("maven.modrinth:simply-swords:${simply_swords_version}-forge"))
+    implementation fg.deobf("maven.modrinth:villager-recruits:${recruits_version}")
 }
 
 tasks.withType(JavaCompile).configureEach {

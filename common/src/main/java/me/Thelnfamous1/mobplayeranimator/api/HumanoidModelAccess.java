@@ -1,5 +1,6 @@
 package me.Thelnfamous1.mobplayeranimator.api;
 
+import me.Thelnfamous1.mobplayeranimator.api.part.HumanoidBodyPose;
 import net.minecraft.client.model.geom.ModelPart;
 
 public interface HumanoidModelAccess {
@@ -16,4 +17,6 @@ public interface HumanoidModelAccess {
     ModelPart mobplayeranimator$getLeftLeg();
 
     ModelPart mobplayeranimator$getRightLeg();
+
+    HumanoidBodyPose mobplayeranimator$getInitialBodyPose();
 }

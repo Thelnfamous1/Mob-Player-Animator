@@ -178,6 +178,7 @@ public class PlayerAnimatorHelper {
      */
     public static void setDefaultPivot(HumanoidModelAccess model){
         // Copied from PlayerAnimator's PlayerModelMixin#setDefaultPivot
+        /*
         model.mobplayeranimator$getHead().setPos(0.0F, 0.0F, 0.0F);
         model.mobplayeranimator$getHead().setRotation(model.mobplayeranimator$getHead().xRot, model.mobplayeranimator$getHead().yRot, 0.0F);
         model.mobplayeranimator$getBody().setPos(0.0F, 0.0F, 0.0F);
@@ -186,6 +187,8 @@ public class PlayerAnimatorHelper {
         model.mobplayeranimator$getRightArm().setPos(-5.0F, model.mobplayeranimator$getRightArm().y, 0.0F);
         model.mobplayeranimator$getLeftLeg().setPos(1.9F, 12.0F, 0.1F);
         model.mobplayeranimator$getRightLeg().setPos(-1.9F, 12.0F, 0.1F);
+         */
+        model.mobplayeranimator$getInitialBodyPose().pose(model);
     }
 
     /**

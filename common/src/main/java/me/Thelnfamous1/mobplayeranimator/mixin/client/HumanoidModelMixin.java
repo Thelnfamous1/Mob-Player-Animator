@@ -7,6 +7,7 @@ import dev.kosmx.playerAnim.impl.IPlayerModel;
 import me.Thelnfamous1.mobplayeranimator.api.FirstPersonTracker;
 import me.Thelnfamous1.mobplayeranimator.api.HumanoidModelAccess;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
+import me.Thelnfamous1.mobplayeranimator.api.part.HumanoidBodyPose;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -34,6 +35,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
     @Shadow @Final public ModelPart leftArm;
     @Shadow @Final public ModelPart body;
     @Shadow @Final public ModelPart hat;
+    @Unique private HumanoidBodyPose mobplayeranimator$initialBodyPose;
 
     @Shadow public abstract ModelPart getHead();
 
@@ -46,6 +48,18 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
     private void post_init(ModelPart $$0, Function $$1, CallbackInfo ci){
         if(!PlayerModel.class.isInstance(this)){
             PlayerAnimatorHelper.initEmoteSupplier(this, this.mobplayeranimator$emoteSupplier);
+        }
+        this.mobplayeranimator$initialBodyPose = new HumanoidBodyPose(
+                this.head.storePose(),
+                this.body.storePose(),
+                this.leftArm.storePose(), this.rightArm.storePose(),
+                this.leftLeg.storePose(), this.rightLeg.storePose());
+    }
+
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("HEAD"))
+    private void pre_setupAnim(T mob, float $$1, float $$2, float $$3, float $$4, float $$5, CallbackInfo ci){
+        if(!PlayerModel.class.isInstance(this)){
+            PlayerAnimatorHelper.setDefaultPivot(this);
         }
     }
 
@@ -104,5 +118,10 @@ public abstract class HumanoidModelMixin<T extends LivingEntity>
     @Override
     public void mobplayeranimator$setFirstPersonNext(boolean firstPersonNext) {
         this.mobplayeranimator$firstPersonNext = firstPersonNext;
+    }
+
+    @Override
+    public HumanoidBodyPose mobplayeranimator$getInitialBodyPose() {
+        return this.mobplayeranimator$initialBodyPose;
     }
 }
