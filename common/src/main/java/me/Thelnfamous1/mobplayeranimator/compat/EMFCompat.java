@@ -5,7 +5,6 @@ import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimatorClient;
 import me.Thelnfamous1.mobplayeranimator.api.IllagerModelAccess;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import me.Thelnfamous1.mobplayeranimator.api.part.*;
-import me.Thelnfamous1.mobplayeranimator.mixin.client.EMFModelPartWithStateAccessor;
 import me.Thelnfamous1.mobplayeranimator.mixin.client.ModelPartAccessor;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -157,9 +156,7 @@ public class EMFCompat {
     }
 
     public static boolean hasEMFAnimations(EntityModel<?> model){
-        IEMFModel emfModel = (IEMFModel) model;
-        return emfModel.emf$isEMFModel()
-                && ((EMFModelPartWithStateAccessor)emfModel.emf$getEMFRootModel()).mobplayeranimator$getTryAnimate().getAnimation() != null;
+        return EMFAnimationApi.isModelAnimatedByEMF(model);
     }
 
     private static void debugChildren(String name, ModelPart modelPart, LivingEntity mob){

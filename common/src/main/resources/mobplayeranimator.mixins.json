@@ -10,7 +10,6 @@
   ],
   "client": [
     "client.AbstractZombieModelMixin",
-    "client.EMFModelPartWithStateAccessor",
     "client.EntityModelMixin",
     "client.EntityRendererDispatcherMixin",
     "client.HierarchicalModelMixin",
