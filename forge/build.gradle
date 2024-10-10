@@ -102,7 +102,7 @@ dependencies {
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${project.player_anim_version}")
     implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
 
-    runtimeOnly fg.deobf("lib:bettermobcombat-forge:${project.better_mob_combat_version}")
+    runtimeOnly fg.deobf("lib:bettermobcombat-forge:${project.better_mob_combat_version}-all")
 
     // Better Mob Combat Dependencies
     runtimeOnly fg.deobf("maven.modrinth:better-combat:${project.better_combat_version}-forge")
@@ -110,13 +110,13 @@ dependencies {
 
     // Mod Compatibility
     implementation fg.deobf("maven.modrinth:guard-villagers:${project.guard_villagers_version}")
-    implementation fg.deobf("maven.modrinth:entity-model-features:${project.emf_version}")
+    implementation fg.deobf("maven.modrinth:entity-model-features:${project.emf_version}-forge")
     implementation fg.deobf("maven.modrinth:entitytexturefeatures:${project.etf_version}-forge")
     runtimeOnly fg.deobf("curse.maven:all-bark-all-bite-833755:4817227")
     runtimeOnly fg.deobf("maven.modrinth:serious-player-animations:${project.spa_version}-forge")
     runtimeOnly fg.deobf("maven.modrinth:not-enough-animations:${project.nea_version}")
     runtimeOnly fg.deobf("maven.modrinth:minecraft-comes-alive-reborn:${mcar_version}")
-    runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}")
+    runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}+forge")
     runtimeOnly fg.deobf("maven.modrinth:bendy-lib:${bendylib_version}-forge")
     runtimeOnly(fg.deobf("maven.modrinth:simply-swords:${simply_swords_version}-forge"))
     implementation fg.deobf("maven.modrinth:villager-recruits:${recruits_version}")

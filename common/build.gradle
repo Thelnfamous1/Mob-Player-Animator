@@ -30,7 +30,7 @@ dependencies {
     // Better Mob Combat Dependencies
     implementation("maven.modrinth:better-combat:${project.better_combat_version}-forge")
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"))
-    runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
+    implementation("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Coerce;
 @Mixin(targets = {"forge/net/mca/client/model/VillagerEntityBaseModelMCA", "fabric/net/mca/client/model/VillagerEntityBaseModelMCA"})
 public abstract class VillagerEntityBaseModelMCAMixin {
 
-    @WrapOperation(method = {"m_6973_", "setupAnim", "setAngles"}, at = {
+    @WrapOperation(method = {"m_6973_", "method_17087", "setupAnim", "setAngles"}, at = {
             @At(value = "INVOKE", target = "Lforge/net/mca/entity/ai/brain/VillagerBrain;isPanicking()Z", remap = false),
             @At(value = "INVOKE", target = "Lfabric/net/mca/entity/ai/brain/VillagerBrain;isPanicking()Z", remap = false)})
     private boolean wrap_isPanickingForPanicAnimation(@Coerce Object instance, Operation<Boolean> original, LivingEntity villager, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch){
