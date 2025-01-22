@@ -1,7 +1,6 @@
 package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -27,11 +26,6 @@ public abstract class MobRendererMixin<T extends Mob, M extends EntityModel<T>> 
 
     @Unique
     protected void mobplayeranimator$handleFirstPersonRender(T mob) {
-    }
-
-    @Override
-    protected void mobplayeranimator$applyBodyRotations(Mob mob, PoseStack matrixStack, float tickDelta) {
-        PlayerAnimatorHelper.applyBodyRotations(PlayerAnimatorHelper.getAnimation(mob), matrixStack, tickDelta);
     }
 
 }

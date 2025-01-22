@@ -2,6 +2,7 @@ package me.Thelnfamous1.mobplayeranimator.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.Thelnfamous1.mobplayeranimator.MobPlayerAnimatorClient;
+import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import me.Thelnfamous1.mobplayeranimator.compat.EMFCompat;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -42,6 +43,7 @@ public abstract class LivingEntityRendererMixin<
 
     @Unique
     protected void mobplayeranimator$applyBodyRotations(Mob entity, PoseStack matrixStack, float tickDelta) {
+        PlayerAnimatorHelper.applyBodyRotations(PlayerAnimatorHelper.getAnimation(entity), matrixStack, tickDelta);
     }
 
     @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",

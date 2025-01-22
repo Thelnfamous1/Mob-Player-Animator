@@ -24,6 +24,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.AbstractIllager;
+import org.spongepowered.asm.mixin.Unique;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -301,5 +302,10 @@ public class PlayerAnimatorHelper {
 
     public static boolean isActive(KeyframeAnimationPlayer.BodyPart bodyPart) {
         return bodyPart.part != null && bodyPart.part.isEnabled();
+    }
+
+    @Unique
+    public static <T extends HumanoidModelAccess & IMutableModel & FirstPersonTracker> T asMPAModel(HumanoidModelAccess model){
+        return (T) model;
     }
 }

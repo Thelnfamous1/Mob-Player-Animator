@@ -119,7 +119,10 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:architectury-api:${architectury_version}+forge")
     runtimeOnly fg.deobf("maven.modrinth:bendy-lib:${bendylib_version}-forge")
     runtimeOnly(fg.deobf("maven.modrinth:simply-swords:${simply_swords_version}-forge"))
-    implementation fg.deobf("maven.modrinth:villager-recruits:${recruits_version}")
+    runtimeOnly fg.deobf("maven.modrinth:villager-recruits:${recruits_version}")
+    implementation fg.deobf("maven.modrinth:customnpcs-unofficial:${custom_npcs_version}")
+    runtimeOnly fg.deobf("curse.maven:human-companions-570319:5992891")
+    runtimeOnly fg.deobf("maven.modrinth:vampirism:${vampirism_version}")
 }
 
 tasks.withType(JavaCompile).configureEach {
