@@ -6,8 +6,10 @@ import dev.xkmc.modulargolems.content.entity.humanoid.HumanoidGolemEntity;
 import dev.xkmc.modulargolems.content.entity.humanoid.HumanoidGolemModel;
 import me.Thelnfamous1.mobplayeranimator.api.PlayerAnimatorHelper;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 
+@Pseudo
 @Mixin(HumanoidGolemModel.class)
 public class HumanoidGolemModelMixin {
 
