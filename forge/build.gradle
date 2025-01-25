@@ -123,6 +123,7 @@ dependencies {
     implementation fg.deobf("maven.modrinth:customnpcs-unofficial:${custom_npcs_version}")
     runtimeOnly fg.deobf("curse.maven:human-companions-570319:5992891")
     runtimeOnly fg.deobf("maven.modrinth:vampirism:${vampirism_version}")
+    implementation fg.deobf("curse.maven:modulargolems-690937:6058893")
 }
 
 tasks.withType(JavaCompile).configureEach {
