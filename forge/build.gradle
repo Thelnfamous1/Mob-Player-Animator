@@ -124,6 +124,8 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:human-companions-570319:5992891")
     runtimeOnly fg.deobf("maven.modrinth:vampirism:${vampirism_version}")
     implementation fg.deobf("curse.maven:modulargolems-690937:6058893")
+    // Modular Golems dependency
+        runtimeOnly fg.deobf("curse.maven:l2library-620203:5921890")
 }
 
 tasks.withType(JavaCompile).configureEach {

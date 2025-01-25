@@ -60,6 +60,40 @@ public class MPAClientConfig implements ConfigData {
                                     .build()
                     )
                     .result().get().toString());
+            // Apparently It Takes A Pillage's Legioner uses the Pillager's Model Layer
+            // Fresh Animations ends up animating it just like a Pillager, and when animating a Player Animator animation, its legs would disappear
+            // This means if the Pillager were to somehow use melee AI, it would have the same issue with its legs
+            // To mitigate this for both, we make part modifiers for each of their legs that shifts them down by 12 pixels
+            this.put("minecraft:pillager", MPAModelModifier.CODEC
+                    .encodeStart(
+                            JsonOps.INSTANCE,
+                            MPAModelModifier.builder()
+                                    .withPartModifier(MPAPartPath.of("left_leg#EMF_left_leg"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.LEFT_LEG)
+                                            .withOffsetPos(KeyframeAnimations.posVec(0, -12, 0))
+                                            .build())
+                                    .withPartModifier(MPAPartPath.of("right_leg#EMF_right_leg"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.RIGHT_LEG)
+                                            .withOffsetPos(KeyframeAnimations.posVec(0, -12, 0))
+                                            .build())
+                                    .build()
+                    )
+                    .result().get().toString());
+            this.put("takesapillage:legioner", MPAModelModifier.CODEC
+                    .encodeStart(
+                            JsonOps.INSTANCE,
+                            MPAModelModifier.builder()
+                                    .withPartModifier(MPAPartPath.of("left_leg#EMF_left_leg"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.LEFT_LEG)
+                                            .withOffsetPos(KeyframeAnimations.posVec(0, -12, 0))
+                                            .build())
+                                    .withPartModifier(MPAPartPath.of("right_leg#EMF_right_leg"), MPAPartModifier.builder()
+                                            .withAnimatedGroup(MPABodyPart.RIGHT_LEG)
+                                            .withOffsetPos(KeyframeAnimations.posVec(0, -12, 0))
+                                            .build())
+                                    .build()
+                    )
+                    .result().get().toString());
         }
     };
     @ConfigEntry.Gui.Tooltip
